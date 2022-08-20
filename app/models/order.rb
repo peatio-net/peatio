@@ -94,6 +94,7 @@ class Order < ApplicationRecord
 
   before_create do
     self.uuid = UUID.generate if uuid.blank?
+    Rails.logger.info { "PMC 1 - Order before_create" }
   end
 
   after_commit on: :create do
@@ -173,6 +174,8 @@ class Order < ApplicationRecord
 
   def submit_order
     return unless new_record?
+
+    Rails.logger.info { "PMC 1 - Order new_record" }
 
     self.locked = self.origin_locked = if ord_type == 'market' && side == 'buy'
                                          [compute_locked * OrderBid::LOCKING_BUFFER_FACTOR, member_balance].min
@@ -408,6 +411,7 @@ end
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #
+
 # Indexes
 #
 #  index_orders_on_member_id                                     (member_id)

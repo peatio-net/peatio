@@ -5,6 +5,8 @@ module API
     module OrderHelpers
 
       def build_order(attrs)
+        Rails.logger.info { "PMC 1 - OrderHelpers build_order" }
+
         (attrs[:side] == 'sell' ? OrderAsk : OrderBid).new \
           state:         ::Order::PENDING,
           member:        current_user,
@@ -25,7 +27,11 @@ module API
           ActiveRecord::RecordInvalid => 'market.order.invalid_volume_or_price'
         }
 
+        Rails.logger.info { "PMC 1 - OrderHelpers create_order" }
+        Rails.logger.info { "PMC 2 - OrderHelpers create_order attrs=#{attrs}" }
+
         order = build_order(attrs)
+
         order.submit_order
         order
         # TODO: Make more specific error message for ActiveRecord::RecordInvalid.
@@ -41,6 +47,7 @@ module API
       end
 
       def order_param
+        Rails.logger.info { "PMC 1 - OrderHelpers order_param" }
         params[:order_by].downcase == 'asc' ? 'id asc' : 'id desc'
       end
     end

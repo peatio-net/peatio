@@ -10,7 +10,7 @@ module Jobs
           @tickers[market.symbol] = ticker
           @cache_tickers[market.symbol] = format_ticker ticker
         end
-        Rails.logger.info { "Publish tickers: #{@tickers}" }
+        #Rails.logger.info { "Publish tickers: #{@tickers}" } PMC 20-08-2022 too much detail in logs
         Rails.cache.write(:markets_tickers, @cache_tickers)
         ::AMQP::Queue.enqueue_event('public', 'global', 'tickers', @tickers)
         sleep 5
