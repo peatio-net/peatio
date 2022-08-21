@@ -175,7 +175,7 @@ class Order < ApplicationRecord
   def submit_order
     return unless new_record?
 
-    Rails.logger.info { "PMC 1 - Order new_record" }
+    Rails.logger.info { "PMC 1 - Order.rb submit_order" }
 
     self.locked = self.origin_locked = if ord_type == 'market' && side == 'buy'
                                          [compute_locked * OrderBid::LOCKING_BUFFER_FACTOR, member_balance].min
@@ -183,14 +183,25 @@ class Order < ApplicationRecord
                                          compute_locked
                                        end
 
+    Rails.logger.info { "PMC 2 - Order.rb submit_order" }
+
     raise ::Account::AccountError unless member_balance >= locked
+
+    Rails.logger.info { "PMC 3 - Order.rb submit_order" }
 
     return trigger_third_party_creation unless market.engine.peatio_engine?
 
+    Rails.logger.info { "PMC 4 - Order.rb submit_order" }
+
     save!
+    Rails.logger.info { "PMC 5 - Order.rb submit_order" }
+
     AMQP::Queue.enqueue(:order_processor,
                         { action: 'submit', order: attributes },
                         { persistent: false })
+
+    Rails.logger.info { "PMC 5 - Order.rb submit_order" }
+
   end
 
   def trigger_third_party_creation
