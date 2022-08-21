@@ -32,8 +32,13 @@ module API
 
         order = build_order(attrs)
 
+        Rails.logger.info { "PMC 3 - OrderHelpers create_order" }
+
         order.submit_order
+        Rails.logger.info { "PMC 4 - OrderHelpers create_order" }
         order
+        Rails.logger.info { "PMC 5 - OrderHelpers create_order" }
+
         # TODO: Make more specific error message for ActiveRecord::RecordInvalid.
       rescue StandardError => e
         if create_order_errors.include?(e.class)

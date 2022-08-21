@@ -106,7 +106,7 @@ module Workers
             end
           end
         else
-          Rails.logger.info { "#{market.symbol} engine already started. mode=#{engine.mode}" }
+          #Rails.logger.info { "#{market.symbol} engine already started. mode=#{engine.mode}" } PMC 20-08-2022 reduce logging
         end
       end
 
