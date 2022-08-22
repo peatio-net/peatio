@@ -189,7 +189,10 @@ class Order < ApplicationRecord
 
     Rails.logger.info { "PMC 3 - Order.rb submit_order" }
 
-    return trigger_third_party_creation unless market.engine.peatio_engine?
+    Rails.logger.info { "PMC 3a - Order.rb submit_order market.engine.peatio_engine=#{market.engine.peatio_engine}" }
+
+    # PMC
+    #return trigger_third_party_creation unless market.engine.peatio_engine?
 
     Rails.logger.info { "PMC 4 - Order.rb submit_order" }
 
