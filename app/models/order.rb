@@ -18,6 +18,9 @@ class Order < ApplicationRecord
 
   TYPES = %w[market limit].freeze
 
+  TMP25 = 119
+  DEALER_MEMBER_ID = TMP25.to_i
+
   THIRD_PARTY_ORDER_ACTION_TYPE = {
     'submit_single' => 0,
     'cancel_single' => 3,
@@ -123,7 +126,10 @@ class Order < ApplicationRecord
         order = lock.find_by_id!(id)
         return unless order.state == ::Order::PENDING
 
-        order.hold_account!.lock_funds!(order.locked)
+        if DEALER_MEMBER_ID != order.member_id
+          order.hold_account!.lock_funds!(order.locked)
+        end
+
         order.record_submit_operations!
         order.update!(state: ::Order::WAIT)
 
@@ -144,7 +150,11 @@ class Order < ApplicationRecord
       return order.trigger_third_party_cancellation unless market_engine.peatio_engine?
 
       ActiveRecord::Base.transaction do
-        order.hold_account!.unlock_funds!(order.locked)
+
+        if DEALER_MEMBER_ID != order.member_id
+          order.hold_account!.unlock_funds!(order.locked)
+        end
+
         order.record_cancel_operations!
 
         order.update!(state: ::Order::CANCEL)
