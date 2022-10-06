@@ -126,10 +126,10 @@ class Order < ApplicationRecord
         order = lock.find_by_id!(id)
         return unless order.state == ::Order::PENDING
 
-        # PMC 3-10-2022 remove optimisations 
-        #if DEALER_MEMBER_ID != order.member_id
+        # PMC 3-10-2022 remove optimisations
+        if DEALER_MEMBER_ID != order.member_id
           order.hold_account!.lock_funds!(order.locked)
-        #end
+        end
 
         order.record_submit_operations!
         order.update!(state: ::Order::WAIT)
@@ -154,9 +154,9 @@ class Order < ApplicationRecord
       ActiveRecord::Base.transaction do
 
         # PMC 03-10-2022 Remove optimisations
-        #if DEALER_MEMBER_ID != order.member_id
+        if DEALER_MEMBER_ID != order.member_id
           order.hold_account!.unlock_funds!(order.locked)
-        #end
+        end
 
         order.record_cancel_operations!
 

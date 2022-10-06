@@ -99,13 +99,15 @@ class Account < ApplicationRecord
 
   def attributes_after_lock_funds!(amount)
     # PMC removed optimisations 2-10-2022
-    #if DEALER_MEMBER_ID != member_id
+    if DEALER_MEMBER_ID == member_id
+      { balance: balance - amount}
+    else
       if amount <= ZERO || amount > balance
         raise AccountError, "Cannot lock funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance}, locked: #{locked})."
       end
-    #end
+        { balance: balance - amount, locked: locked + amount }
+    end
 
-    { balance: balance - amount, locked: locked + amount }
   end
 
   def unlock_funds!(amount)
@@ -136,12 +138,14 @@ class Account < ApplicationRecord
 
   def attributes_after_unlock_and_sub_funds!(amount)
     # PMC removed optimisations 3-10-2022
-    #if DEALER_MEMBER_ID != member_id
+    if DEALER_MEMBER_ID == member_id
+
+    else
       if amount <= ZERO || amount > locked
         raise AccountError, "Cannot unlock and sub funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, locked: #{locked})."
       end
-    #end
-    { locked: locked - amount }
+      { locked: locked - amount }
+    end
   end
 
   def amount
