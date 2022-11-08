@@ -198,7 +198,9 @@ module Matching
 
       outcome_account.assign_attributes locked: outcome_account.attributes_after_unlock_and_sub_funds!(outcome_value)
       #outcome_account.assign_attributes outcome_account.attributes_after_unlock_and_sub_funds!(outcome_value)
-      #def attributes_after_unlock_and_sub_funds!(amount)
+      # PMC added locked: to parameter to fix RoR error 01-Nov-2022
+      # This section of code has not changed since 2.6!
+      # def attributes_after_unlock_and_sub_funds!(amount)
 
       income_account.assign_attributes income_account.attributes_after_plus_funds!(real_income_value)
 
