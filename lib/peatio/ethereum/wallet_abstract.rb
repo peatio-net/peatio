@@ -49,7 +49,7 @@ module Ethereum
       elsif @currency[:id] == native_currency_id
         create_eth_transaction!(transaction, options)
       else
-        raise Peatio::Wallet::ClientError.new("Currency #{@currency[:id]} doesn't have option #{contract_address_option}")
+        raise Peatio::Wallet::ClientError.new("Currency #{@currency[:id]}, native_currency_id = #{native_currency_id},doesn't have option #{contract_address_option}")
       end
     rescue Ethereum::Client::Error => e
       raise Peatio::Wallet::ClientError, e
