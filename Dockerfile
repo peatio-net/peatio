@@ -29,7 +29,8 @@ RUN apt-get update && apt-get upgrade -y
 RUN apt-get install default-libmysqlclient-dev -y
 
 # Install Kaigara
-ARG KAIGARA_VERSION=v1.0.29
+# ARG KAIGARA_VERSION=v1.0.29
+ARG KAIGARA_VERSION=0.1.24
 
 RUN curl -Lo /usr/bin/kaigara https://github.com/openware/kaigara/releases/download/${KAIGARA_VERSION}/kaigara \
   && chmod +x /usr/bin/kaigara
