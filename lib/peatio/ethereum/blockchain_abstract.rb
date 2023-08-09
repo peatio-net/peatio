@@ -117,6 +117,8 @@ module Ethereum
     end
 
     def load_balance_of_address!(address, currency_id)
+      # PMC 2023-08-09 extra logging
+      Rails.logger.info "load_balance_of_address: #{address}, currency_id: #{currency_id}"
       currency = settings[:currencies].find { |c| c[:id] == currency_id.to_s }
       raise UndefinedCurrencyError unless currency
 
