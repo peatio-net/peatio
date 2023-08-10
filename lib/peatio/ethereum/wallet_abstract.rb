@@ -46,7 +46,8 @@ module Ethereum
     def create_transaction!(transaction, options = {})
       if @currency.dig(:options, contract_address_option).present?
         create_erc20_transaction!(transaction)
-      elsif @currency[:id] == native_currency_id or @currency[:id] == 'bnb' or @currency[:id] == 'ht'or @currency[:id] == 'etc'
+      # PMC extra filters for non-eth evm
+      elsif @currency[:id] == native_currency_id or @currency[:id] == 'bnb' or @currency[:id] == 'ht' or @currency[:id] == 'etc' or @currency[:id] == 'eth'
         create_eth_transaction!(transaction, options)
       else
         raise Peatio::Wallet::ClientError.new("Currency #{@currency[:id]}, native_currency_id = #{native_currency_id}, doesn't have option #{contract_address_option}")
@@ -89,7 +90,8 @@ module Ethereum
     def load_balance!
       if @currency.dig(:options, contract_address_option).present?
         load_erc20_balance(@wallet.fetch(:address))
-      elsif @currency[:id] == native_currency_id
+      # PMC 20230810
+      elsif @currency[:id] == native_currency_id or @currency[:id] == 'bnb' or @currency[:id] == 'ht' or @currency[:id] == 'etc' or @currency[:id] == 'eth'
         client.json_rpc(:eth_getBalance, [normalize_address(@wallet.fetch(:address)), 'latest'])
         .hex
         .to_d

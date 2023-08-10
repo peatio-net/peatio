@@ -125,7 +125,8 @@ module Ethereum
 
       if currency.dig(:options, contract_address_option).present?
         load_erc20_balance(address, currency)
-      elsif currency_id.to_s == native_currency_id
+      # PMC 2023-08-10 extra filters for non-eth evm
+      elsif currency_id.to_s == native_currency_id  or currency_id.to_s == 'bnb' or currency_id.to_s == 'ht'or currency_id.to_s == 'etc'or currency_id.to_s == 'eth' 
         client.json_rpc(:eth_getBalance, [normalize_address(address), 'latest'])
               .hex
               .to_d
