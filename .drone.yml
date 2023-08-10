@@ -110,6 +110,85 @@ trigger:
 ---
 kind: pipeline
 type: docker
+name: test-mariadb-10.3
+
+services:
+- name: mariadb
+  image: mariadb:10.3
+  ports:
+    - 3306
+  environment:
+    MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+
+- name: influxdb
+  image: influxdb:1.7.8
+  ports:
+    - 8086
+  environment:
+    INFLUXDB_ADMIN_ENABLED: 'true'
+
+- name: rabbitmq
+  image: rabbitmq:3.8.9
+  ports:
+    - 5672
+
+- name: redis
+  image: redis:4.0
+  ports:
+    - 6379
+
+steps:
+- name: wait-for-services
+  image: jwilder/dockerize
+  commands:
+  - dockerize -wait tcp://mariadb:3306 -wait tcp://influxdb:8086 -wait tcp://rabbitmq:5672 -wait tcp://redis:6379 -timeout 1m
+
+- name: init-influxdb
+  image: influxdb:1.7.8
+  commands:
+  - cat db/influxdb.sql | influx -host influxdb
+
+- name: restore-bundle-cache
+  pull: if-not-exists
+  image: drillster/drone-volume-cache
+  settings:
+    restore: true
+    mount:
+    - vendor/bundle
+  volumes:
+  - name: bundle-cache
+    path: /cache
+
+- name: run-rspec
+  image: ruby:2.6.5
+  environment:
+    DATABASE_HOST: "mariadb"
+    DATABASE_SUPPORT_JSON: "false"
+    INFLUXDB_HOST: influxdb
+    RABBITMQ_HOST: rabbitmq
+    EVENT_API_RABBITMQ_HOST: rabbitmq
+    REDIS_URL: redis://redis:6379
+    RAILS_ENV: test
+    VAULT_ADDR: ''
+    VAULT_TOKEN: ''
+  commands:
+  - bin/init_config
+  - gem install bundler:2.1.4
+  - bundle install --jobs=$(nproc) --retry=3 --path vendor/bundle
+  - bundle exec rake db:create db:migrate
+  - LOG_LEVEL=warn bundle exec rspec
+
+trigger:
+  event:
+    - push
+  branch:
+    - master
+    - "*-stable"
+    - "fix-db/*"
+
+---
+kind: pipeline
+type: docker
 name: test-mysql-8.0
 
 services:
@@ -140,17 +219,17 @@ services:
     - 6379
 
 steps:
-- name: Wait for services
+- name: wait-for-services
   image: jwilder/dockerize
   commands:
   - dockerize -wait tcp://mysql:3306 -wait tcp://influxdb:8086 -wait tcp://rabbitmq:5672 -wait tcp://redis:6379 -timeout 1m
 
-- name: Initialize InfluxDB
+- name: init-influxdb
   image: influxdb:1.7.8
   commands:
   - cat db/influxdb.sql | influx -host influxdb
 
-- name: Restore bundle cache
+- name: restore-bundle-cache
   pull: if-not-exists
   image: drillster/drone-volume-cache
   settings:
@@ -161,7 +240,7 @@ steps:
   - name: bundle-cache
     path: /cache
 
-- name: Run RSpec
+- name: run-rspec
   image: ruby:2.6.5
   environment:
     DATABASE_HOST: "mysql"
@@ -190,10 +269,93 @@ trigger:
 ---
 kind: pipeline
 type: docker
-name: Docker build & docs update
+name: test-postgresql-13.0
+
+services:
+- name: postgres
+  image: postgres:13.0
+  ports:
+    - 5432
+  environment:
+    POSTGRES_PASSWORD: changeme
+
+- name: influxdb
+  image: influxdb:1.7.8
+  ports:
+    - 8086
+  environment:
+    INFLUXDB_ADMIN_ENABLED: 'true'
+
+- name: rabbitmq
+  image: rabbitmq:3.8.9
+  ports:
+    - 5672
+
+- name: redis
+  image: redis:4.0
+  ports:
+    - 6379
 
 steps:
-- name: Save Git SHA
+- name: wait-for-services
+  image: jwilder/dockerize
+  commands:
+  - dockerize -wait tcp://postgres:5432 -wait tcp://influxdb:8086 -wait tcp://rabbitmq:5672 -wait tcp://redis:6379 -timeout 1m
+
+- name: init-influxdb
+  image: influxdb:1.7.8
+  commands:
+  - cat db/influxdb.sql | influx -host influxdb
+
+- name: restore-bundle-cache
+  pull: if-not-exists
+  image: drillster/drone-volume-cache
+  settings:
+    restore: true
+    mount:
+    - vendor/bundle
+  volumes:
+  - name: bundle-cache
+    path: /cache
+
+- name: run-rspec
+  image: ruby:2.6.5
+  environment:
+    DATABASE_HOST: "postgres"
+    DATABASE_USER: "postgres"
+    DATABASE_PASS: "changeme"
+    DATABASE_ADAPTER: "postgresql"
+    DATABASE_PORT: "5432"
+    DATABASE_COLLATION: ""
+    INFLUXDB_HOST: influxdb
+    RABBITMQ_HOST: rabbitmq
+    EVENT_API_RABBITMQ_HOST: rabbitmq
+    REDIS_URL: redis://redis:6379
+    RAILS_ENV: test
+    VAULT_ADDR: ''
+    VAULT_TOKEN: ''
+  commands:
+  - bin/init_config
+  - gem install bundler:2.1.4
+  - bundle install --jobs=$(nproc) --retry=3 --path vendor/bundle
+  - bundle exec rake db:create db:migrate
+  - LOG_LEVEL=warn bundle exec rspec
+
+trigger:
+  event:
+    - push
+  branch:
+    - master
+    - "*-stable"
+    - "fix-db/*"
+
+---
+kind: pipeline
+type: docker
+name: docker-build-snapshot
+
+steps:
+- name: git-tag-snapshot
   image: quay.io/openware/sdk-citools:2.6.7
   environment:
     BRANCH_NAME: master
@@ -205,7 +367,7 @@ steps:
     - bin/genversion
 
 # Build and push docker image using ".tags" file.
-- name: Build Docker image
+- name: docker-build-and-push
   image: plugins/docker
   settings:
     username:
@@ -215,7 +377,7 @@ steps:
     repo: quay.io/openware/peatio
     registry: quay.io
 
-- name: Update global OpenDAX version
+- name: "Update global OpenDAX version"
   image: quay.io/openware/goci:0.0.11
   environment:
     GIT_TOKEN:
@@ -226,8 +388,23 @@ steps:
     branch:
       - master
 
+# Redeploy on master.devkube.com
+- name: devkube-redeploy
+  image: rubykube/microkube:0.2.0
+  environment:
+    WEBHOOK_JWT_SECRET:
+      from_secret: devkube_webhook_secret
+  commands:
+    - export latest_image=quay.io/openware/peatio:$(cat .tags)
+    - cd /home/app
+    - bundle exec rake payload:send[peatio,$latest_image,http://master.devkube.com:1337]
+  detach: true
+  when:
+    branch:
+      - master
+
 # Update changelog and API documentation, then push it to sdk repository and notify.
-- name: Update docs & notify
+- name: push-and-notify
   image: quay.io/openware/sdk-citools:2.6.7
   environment:
     BOT_USERNAME: kite-bot
@@ -253,7 +430,7 @@ steps:
       - master
 
 # Trigger custom Peatio image build
-- name: Build custom Docker image
+- name: build-custom-image
   image: curlimages/curl
   environment:
     SERVER: https://ci.openware.work
@@ -286,7 +463,7 @@ image_pull_secrets:
 ---
 kind: pipeline
 type: docker
-name: Build stable Docker image
+name: docker-build-stable
 
 steps:
 # Update application version
@@ -305,7 +482,7 @@ steps:
     - bin/genversion
 
 # Build and push docker image using ".tags" file.
-- name: Build Docker image
+- name: docker-build-and-push
   image: plugins/docker
   settings:
     username:
@@ -315,8 +492,20 @@ steps:
     repo: quay.io/openware/peatio
     registry: quay.io
 
+# Redeploy on master.devkube.com
+- name: devkube-redeploy
+  image: rubykube/microkube:0.2.0
+  environment:
+    WEBHOOK_JWT_SECRET:
+      from_secret: devkube_webhook_secret
+  commands:
+    - export latest_image=quay.io/openware/peatio:$(cat .tags)
+    - cd /home/app
+    - bundle exec rake payload:send[peatio,$latest_image,http://master.devkube.com:1337]
+  detach: true
+
 # Update changelog and API documentation, then push it to sdk repository and notify.
-- name: Update docs & notify
+- name: push-and-notify
   image: quay.io/openware/sdk-citools:2.6.7
   environment:
     BOT_USERNAME: kite-bot
@@ -339,7 +528,7 @@ steps:
     - BUNDLE_GEMFILE=/sdk/Gemfile bundle exec rake --rakefile=/sdk/Rakefile ci:postbuild[/drone/src]
 
 # Trigger custom Peatio image build
-- name: Build custom Docker image
+- name: build-custom-image
   image: curlimages/curl
   environment:
     SERVER: https://ci.openware.work
@@ -369,7 +558,9 @@ trigger:
 
 depends_on:
 - test-mysql-5.7
+- test-mariadb-10.3
 - test-mysql-8.0
+- test-postgresql-13.0
 
 image_pull_secrets:
   - dockerconfigjson
