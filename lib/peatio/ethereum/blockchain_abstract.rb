@@ -118,13 +118,15 @@ module Ethereum
 
     def load_balance_of_address!(address, currency_id)
       # PMC 2023-08-09 extra logging
+      Rails.logger.info "load_balance_of_address: line 121"
       Rails.logger.info "load_balance_of_address: #{address}, currency_id: #{currency_id}"
       currency = settings[:currencies].find { |c| c[:id] == currency_id.to_s }
       raise UndefinedCurrencyError unless currency
 
       if currency.dig(:options, contract_address_option).present?
         load_erc20_balance(address, currency)
-      elsif currency_id.to_s == native_currency_id
+      # PMC 2023-08-10 extra filters for non-eth evm
+      elsif currency_id.to_s == native_currency_id  or currency_id.to_s == 'bnb' or currency_id.to_s == 'ht'or currency_id.to_s == 'etc'or currency_id.to_s == 'eth' 
         client.json_rpc(:eth_getBalance, [normalize_address(address), 'latest'])
               .hex
               .to_d
