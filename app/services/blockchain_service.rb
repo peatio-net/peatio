@@ -7,6 +7,9 @@ class BlockchainService
   attr_reader :blockchain, :whitelisted_smart_contract, :currencies, :adapter
 
   def initialize(blockchain)
+    
+    Rails.logger.warn { "PMC initialize(blockchain) 10 - blockchain: #{blockchain}" }
+
     @blockchain = blockchain
     @blockchain_currencies = blockchain.blockchain_currencies.deposit_enabled
     @currencies = @blockchain_currencies.pluck(:currency_id).uniq
@@ -22,7 +25,7 @@ class BlockchainService
   end
 
   def load_balance!(address, currency_id)
-    Rails.logger.info { "PMC blockchain_service.rb load_balance! address: #{address}, currency_id: #{currency_id}" }
+    Rails.logger.warn { "PMC blockchain_service.rb load_balance! address: #{address}, currency_id: #{currency_id}" }
     @adapter.load_balance_of_address!(address, currency_id)
   rescue Peatio::Blockchain::Error => e
     report_exception(e)
