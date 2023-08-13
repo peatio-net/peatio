@@ -22,6 +22,7 @@ class BlockchainService
   end
 
   def load_balance!(address, currency_id)
+    Rails.logger.info { "PMC blockchain_service.rb load_balance! address: #{address}, currency_id: #{currency_id}" }
     @adapter.load_balance_of_address!(address, currency_id)
   rescue Peatio::Blockchain::Error => e
     report_exception(e)

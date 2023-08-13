@@ -90,6 +90,7 @@ module Bitcoin
     end
 
     def load_balance_of_address!(address, _currency_id)
+      Rails.logger.info { "PMC blockchain_.rb load_balance_of_address! address: #{address}, currency_id: #{currency_id}" }
       address_with_balance = client.json_rpc(:listaddressgroupings)
                                    .flatten(1)
                                    .find { |addr| addr[0] == address }
