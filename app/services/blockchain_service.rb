@@ -7,10 +7,11 @@ class BlockchainService
   attr_reader :blockchain, :whitelisted_smart_contract, :currencies, :adapter
 
   def initialize(blockchain)
-    
-    Rails.logger.warn { "PMC initialize(blockchain) 10 - blockchain: #{blockchain}" }
+
 
     @blockchain = blockchain
+    Rails.logger.warn { "PMC initialize(blockchain) - blockchain: #{blockchain.key}" }
+
     @blockchain_currencies = blockchain.blockchain_currencies.deposit_enabled
     @currencies = @blockchain_currencies.pluck(:currency_id).uniq
     @whitelisted_addresses = blockchain.whitelisted_smart_contracts.active
