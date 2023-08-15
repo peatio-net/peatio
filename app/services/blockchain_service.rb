@@ -108,7 +108,7 @@ class BlockchainService
       # Fetch Deposit record
       deposit = tx.reference
       # PMC
-      Rails.logger.warn { "PMC filter_deposit_txs() - tx.reference}: #{tx.reference}" }
+      Rails.logger.warn { "PMC filter_deposit_txs() - tx.reference: #{deposit}" }
 
       # Skip already processed deposit (should not happen if transaction in pending state)
       next unless deposit.fee_collecting? || deposit.collecting?
