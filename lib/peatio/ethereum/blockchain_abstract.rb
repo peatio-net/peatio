@@ -118,11 +118,11 @@ module Ethereum
 
     def load_balance_of_address!(address, currency_id)
       # PMC 2023-08-09 extra logging
-      Rails.logger.warn "PMC line 121 - load_balance_of_address: #{address}, currency_id: #{currency_id}"
+      #Rails.logger.warn "PMC line 121 - load_balance_of_address: #{address}, currency_id: #{currency_id}"
       #Rails.logger.warn { "Withdraw with id: #{withdraw.id} and state: #{withdraw.aasm_state} does not have a remote_id, skipping." }
 
       currency = settings[:currencies].find { |c| c[:id] == currency_id.to_s }
-      Rails.logger.warn { "PMC line 126 blockchain_abstract.rb load_balance_of_address - currency_id: #{currency_id}, currency_id.to_s: #{currency_id.to_s}, currency: #{currency}." }
+      Rails.logger.warn { "PMC line 125 blockchain_abstract.rb load_balance_of_address - address: #{address}, currency_id: #{currency_id}, currency_id.to_s: #{currency_id.to_s}, currency: #{currency}." }
 
       raise UndefinedCurrencyError unless currency
 

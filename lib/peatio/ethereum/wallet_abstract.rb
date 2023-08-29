@@ -101,7 +101,7 @@ module Ethereum
         raise Peatio::Wallet::ClientError.new("Currency #{@currency[:id]} doesn't have option #{contract_address_option}")
       end
     rescue Ethereum::Client::Error => e
-      Rails.logger.warn { "PMC line 103 - load_balance! - Currency: #{@currency[:id]}, native_currency_id: #{native_currency_id},  contract address: #{contract_address_option}"}
+      Rails.logger.warn { "PMC line 104 - load_balance! - Currency: #{@currency[:id]}, native_currency_id: #{native_currency_id},  contract address: #{contract_address_option}"}
       raise Peatio::Wallet::ClientError, e
     end
 
