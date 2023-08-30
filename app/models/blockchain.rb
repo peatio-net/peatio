@@ -59,13 +59,17 @@ class Blockchain < ApplicationRecord
 
   def initialize_fiat_defaults
     if client == Peatio::Blockchain.registry.adapters.key(Fiat).to_s
-      self.status = 'idle'
+      # PMC self.status = 'idle'
+      self.status = 'disabled'
       self.height = 0
     end
   end
 
   def blockchain_api
-    BlockchainService.new(self)
+    # PMC don't load fiat blockchain
+    if client != Peatio::Blockchain.registry.adapters.key(Fiat).to_s
+      BlockchainService.new(self)
+    end
   end
 
   # The latest block which blockchain worker has processed

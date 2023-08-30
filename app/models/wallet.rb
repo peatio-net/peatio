@@ -152,11 +152,13 @@ class Wallet < ApplicationRecord
       currencies.each_with_object({}) do |c, balances|
         balances[c.id] = WalletService.new(self).load_balance!(c)
       rescue StandardError => e
+        Rails.logger.warn { "PMC line 155 - waller.rb - current_balance - Currency: #{currency}"}
         report_exception(e)
         balances[c.id] = NOT_AVAILABLE
       end
     end
   rescue StandardError => e
+    Rails.logger.warn { "PMC line 161 - waller.rb - current_balance - Currency: #{currency}"}
     report_exception(e)
     NOT_AVAILABLE
   end
