@@ -66,10 +66,7 @@ class Blockchain < ApplicationRecord
   end
 
   def blockchain_api
-    # PMC don't load fiat blockchain
-    if client != Peatio::Blockchain.registry.adapters.key(Fiat).to_s
       BlockchainService.new(self)
-    end
   end
 
   # The latest block which blockchain worker has processed
