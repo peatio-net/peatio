@@ -17,7 +17,7 @@ module Jobs
             Rails.logger.info { "Starting processing coin withdraw with id: #{withdraw.id}." }
 
             unless withdraw.remote_id
-              Rails.logger.warn { "Withdraw with id: #{withdraw.id} and state: #{withdraw.aasm_state} does not have a remote_id, skipping." }
+              Rails.logger.warn { "Withdraw with id: #{withdraw.id}, currency: #{withdraw.currency_id}, blockchain: #{withdraw.blockchain_key} and state: #{withdraw.aasm_state} does not have a remote_id, skipping." }
               next
             end
 
@@ -50,7 +50,8 @@ module Jobs
             @service = nil
 
             unless withdraw.remote_id
-              Rails.logger.warn { "Withdraw with id: #{withdraw.id} and state: #{withdraw.aasm_state} does not have a remote_id, skipping." }
+              Rails.logger.warn { "Withdraw with id: #{withdraw.id}, currency: #{withdraw.currency_id}, blockchain: #{withdraw.blockchain_key} and state: #{withdraw.aasm_state} does not have a remote_id, skipping." }
+
               next
             end
 

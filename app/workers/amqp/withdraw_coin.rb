@@ -74,6 +74,8 @@ module Workers
           @logger.warn id: withdraw.id,
                        message: 'Updating withdraw state in database.'
 
+          Rails.logger.warn { "PMC line 77 withdraw.with_lock - id: #{withdraw.id}, currency: #{withdraw.currency_id}, transaction.options: #{transaction.options}, transaction.options['remote_id']: #{transaction.options['remote_id']}, withdraw.remote_id: #{withdraw.remote_id}, blockchain: #{withdraw.blockchain_key} and state: #{withdraw.aasm_state} does not have a remote_id, skipping." }
+
           if transaction.hash.present?
             withdraw.txid = transaction.hash
             withdraw.dispatch
