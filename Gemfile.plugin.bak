@@ -8,14 +8,14 @@ gem 'peatio-ripple', '~> 2.6.1'
 gem 'peatio-bitgo', '~> 2.6.8'
 gem 'peatio-electrum', '~> 2.6.3'
 
-#gem 'peatio-monero', '~> 0.1.0'
-#gem 'peatio-tron', '~> 0.1.0'
-#gem 'peatio-eos', '~> 0.1.0'
-#gem 'peatio-stellar', '~> 0.1.0'
-#gem 'peatio-cardano', '~> 0.1.0'
-#gem 'peatio-iota', '~> 0.1.0'
-#gem 'peatio-neo', '~> 0.1.0'
-#gem 'peatio-zrx', '~> 0.1.0'
+gem 'peatio-monero', '~> 0.1.0'
+gem 'peatio-tron', '~> 0.1.0'
+gem 'peatio-eos', '~> 0.1.0'
+gem 'peatio-stellar', '~> 0.1.0'
+gem 'peatio-cardano', '~> 0.1.0'
+gem 'peatio-iota', '~> 0.1.0'
+gem 'peatio-neo', '~> 0.1.0'
+gem 'peatio-zrx', '~> 0.1.0'
 
 # PMC 19-May-2022
 

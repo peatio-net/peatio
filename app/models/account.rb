@@ -47,12 +47,10 @@ class Account < ApplicationRecord
   end
 
   def attributes_after_plus_funds!(amount)
-    # PMC removed optimisations 2-10-2022
-#    if DEALER_MEMBER_ID != member_id
-      if amount <= ZERO and member_id != 119
-        raise AccountError, "Cannot add funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance})."
-      end
-#    end
+    # PMC 2-10-2022
+    if amount <= ZERO and member_id != 119
+      raise AccountError, "Cannot add funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance})."
+    end
 
     { balance: balance + amount }
   end
@@ -68,13 +66,11 @@ class Account < ApplicationRecord
 
   def attributes_after_plus_locked_funds!(amount)
     # PMC removed optimisations 2-10-2022
-#    if DEALER_MEMBER_ID != member_id
-      if amount <= ZERO  and member_id != 119
-        raise AccountError, "Cannot add funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, locked: #{locked})."
-      end
+    if amount <= ZERO  and member_id != 119
+      raise AccountError, "Cannot add funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, locked: #{locked})."
+    end
 
-      { locked: locked + amount }
-#    end
+    { locked: locked + amount }
   end
 
   def sub_funds!(amount)
@@ -88,11 +84,10 @@ class Account < ApplicationRecord
 
   def attributes_after_sub_funds!(amount)
     # PMC removed optimisations 2-10-2022
-#    if DEALER_MEMBER_ID != member_id
-      if (amount <= ZERO || amount > balance)  and member_id != 119
-        raise AccountError, "Cannot subtract funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance})."
-      end
-#    end
+    if (amount <= ZERO || amount > balance)  and member_id != 119
+      raise AccountError, "Cannot subtract funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance})."
+    end
+
     { balance: balance - amount }
   end
 
@@ -107,15 +102,11 @@ class Account < ApplicationRecord
 
   def attributes_after_lock_funds!(amount)
     # PMC removed optimisations 2-10-2022
-#    if DEALER_MEMBER_ID == member_id
-#      { balance: balance - amount}
-#    else
-      if (amount <= ZERO || amount > balance) and member_id != 119
-        raise AccountError, "Cannot lock funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance}, locked: #{locked})."
-      end
-        { balance: balance - amount, locked: locked + amount }
-#    end
+    if (amount <= ZERO || amount > balance) and member_id != 119
+      raise AccountError, "Cannot lock funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance}, locked: #{locked})."
+    end
 
+    { balance: balance - amount, locked: locked + amount }
   end
 
   def unlock_funds!(amount)
@@ -129,15 +120,11 @@ class Account < ApplicationRecord
 
   def attributes_after_unlock_funds!(amount)
     # PMC removed optimisations 2-10-2022
-#    if DEALER_MEMBER_ID == member_id
-#      { balance: balance + amount}
-#    else
-      if (amount <= ZERO || amount > locked) and member_id != 119
-        raise AccountError, "Cannot unlock funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance} locked: #{locked})."
-      end
+    if (amount <= ZERO || amount > locked) and member_id != 119
+      raise AccountError, "Cannot unlock funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance} locked: #{locked})."
+    end
 
-      { balance: balance + amount, locked: locked - amount }
-#    end
+    { balance: balance + amount, locked: locked - amount }
   end
 
   def unlock_and_sub_funds!(amount)
@@ -151,12 +138,11 @@ class Account < ApplicationRecord
 
   def attributes_after_unlock_and_sub_funds!(amount)
     # PMC removed optimisations 3-10-2022
-#    if DEALER_MEMBER_ID != member_id
-      if (amount <= ZERO || amount > locked) and member_id != 119
-        raise AccountError, "Cannot unlock and sub funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, locked: #{locked})."
-      end
-      { locked: locked - amount }
-#    end
+    if (amount <= ZERO || amount > locked) and member_id != 119
+      raise AccountError, "Cannot unlock and sub funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, locked: #{locked})."
+    end
+
+    { locked: locked - amount }
   end
 
   def amount
