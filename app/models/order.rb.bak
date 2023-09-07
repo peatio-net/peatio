@@ -149,7 +149,7 @@ class Order < ApplicationRecord
       return unless order.state == ::Order::WAIT
 
       # PMC 22-08-2022 not using Finex
-      return order.trigger_third_party_cancellation unless market_engine.peatio_engine?
+      #return order.trigger_third_party_cancellation unless market_engine.peatio_engine?
 
       ActiveRecord::Base.transaction do
 
@@ -232,7 +232,7 @@ class Order < ApplicationRecord
 
   def trigger_cancellation
     # PMC 22-08-2022 not using Finex
-     market.engine.peatio_engine? ? trigger_internal_cancellation : trigger_third_party_cancellation
+    # market.engine.peatio_engine? ? trigger_internal_cancellation : trigger_third_party_cancellation
     trigger_internal_cancellation
   end
 
