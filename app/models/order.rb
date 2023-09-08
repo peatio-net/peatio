@@ -149,14 +149,11 @@ class Order < ApplicationRecord
       return unless order.state == ::Order::WAIT
 
       # PMC 22-08-2022 not using Finex
-      return order.trigger_third_party_cancellation unless market_engine.peatio_engine?
+      #return order.trigger_third_party_cancellation unless market_engine.peatio_engine?
 
       ActiveRecord::Base.transaction do
 
-        # PMC 03-10-2022 Remove optimisations
-#        if DEALER_MEMBER_ID != order.member_id
-          order.hold_account!.unlock_funds!(order.locked)
-#        end
+        order.hold_account!.unlock_funds!(order.locked)
 
         order.record_cancel_operations!
 

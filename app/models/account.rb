@@ -47,7 +47,6 @@ class Account < ApplicationRecord
   end
 
   def attributes_after_plus_funds!(amount)
-    # PMC 2-10-2022
     if amount <= ZERO and member_id != 119
       raise AccountError, "Cannot add funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance})."
     end
@@ -65,7 +64,6 @@ class Account < ApplicationRecord
   end
 
   def attributes_after_plus_locked_funds!(amount)
-    # PMC removed optimisations 2-10-2022
     if amount <= ZERO  and member_id != 119
       raise AccountError, "Cannot add funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, locked: #{locked})."
     end
