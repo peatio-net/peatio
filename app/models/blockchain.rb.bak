@@ -60,8 +60,7 @@ class Blockchain < ApplicationRecord
   def initialize_fiat_defaults
     if client == Peatio::Blockchain.registry.adapters.key(Fiat).to_s
       self.status = 'idle'
-      self.height = 0
-    end
+      self.height = 0    end
   end
 
   def blockchain_api

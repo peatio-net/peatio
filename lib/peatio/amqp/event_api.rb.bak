@@ -156,9 +156,9 @@ module EventAPI
       extend Memoist
 
       def call(event_name, event_payload)
-        Rails.logger.debug do
-          "\nPublishing #{routing_key(event_name)} (routing key) to #{exchange_name(event_name)} (exchange name).\n"
-        end
+        #Rails.logger.debug do PMC 20-08-2022 logs have too much detail
+        #  "\nPublishing #{routing_key(event_name)} (routing key) to #{exchange_name(event_name)} (exchange name).\n"
+        #end
         exchange = bunny_exchange(exchange_name(event_name))
         exchange.publish(event_payload.to_json, routing_key: routing_key(event_name))
         [event_name, event_payload]
