@@ -5,7 +5,8 @@ module API
     module OrderHelpers
 
       def build_order(attrs)
-        #Rails.logger.info { "PMC 1 - OrderHelpers build_order" }        (attrs[:side] == 'sell' ? OrderAsk : OrderBid).new \
+        #Rails.logger.info { "PMC 1 - OrderHelpers build_order" }
+        (attrs[:side] == 'sell' ? OrderAsk : OrderBid).new \
           state:         ::Order::PENDING,
           member:        current_user,
           ask:           current_market&.base_unit,
