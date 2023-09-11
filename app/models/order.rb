@@ -423,7 +423,6 @@ end
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #
-
 # Indexes
 #
 #  index_orders_on_member_id                                     (member_id)
