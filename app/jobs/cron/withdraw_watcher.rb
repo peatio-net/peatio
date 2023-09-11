@@ -51,7 +51,6 @@ module Jobs
 
             unless withdraw.remote_id
               Rails.logger.warn { "Withdraw with id: #{withdraw.id}, currency: #{withdraw.currency_id}, blockchain: #{withdraw.blockchain_key} and state: #{withdraw.aasm_state} does not have a remote_id, skipping." }
-
               next
             end
 
