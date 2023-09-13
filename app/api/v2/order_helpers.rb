@@ -27,9 +27,6 @@ module API
           ActiveRecord::RecordInvalid => 'market.order.invalid_volume_or_price'
         }
 
-        #Rails.logger.info { "PMC 1 - OrderHelpers create_order" }
-        #Rails.logger.info { "PMC 2 - OrderHelpers create_order attrs=#{attrs}" }
-
         order = build_order(attrs)
 
         #Rails.logger.info { "PMC 3 - OrderHelpers create_order" }

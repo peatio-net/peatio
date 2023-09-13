@@ -164,7 +164,6 @@ class WalletService
                        currency: blockchain_currency.to_blockchain_api_settings)
     @adapter.load_balance!
   rescue Peatio::Wallet::Error => e
-    Rails.logger.warn { "PMC line 167 wallet_service.rb - load_balance! - Currency: #{currency.id}, blockchain_currency: #{blockchain_currency},  blockchain_key: #{@wallet.blockchain_key}"}
     report_exception(e)
     BlockchainService.new(wallet.blockchain).load_balance!(@wallet.address, currency.id)
   end

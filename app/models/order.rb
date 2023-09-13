@@ -97,7 +97,6 @@ class Order < ApplicationRecord
 
   before_create do
     self.uuid = UUID.generate if uuid.blank?
-    #Rails.logger.info { "PMC 1 - Order before_create" }
   end
 
   after_commit on: :create do
@@ -189,10 +188,9 @@ class Order < ApplicationRecord
 
     raise ::Account::AccountError unless member_balance >= locked
 
-    #Rails.logger.info { "PMC 3 - Order.rb submit_order" }
     #Rails.logger.info { "PMC 3a - Order.rb submit_order market.engine.peatio_engine=#{market.engine.peatio_engine}" }
 
-    #return trigger_third_party_creation unless market.engine.peatio_engine?
+    return trigger_third_party_creation unless market.engine.peatio_engine?
 
     #Rails.logger.info { "PMC 4 - Order.rb submit_order" }
     save!
@@ -215,7 +213,7 @@ class Order < ApplicationRecord
   end
 
   def trigger_cancellation
-     #market.engine.peatio_engine? ? trigger_internal_cancellation : trigger_third_party_cancellation
+     market.engine.peatio_engine? ? trigger_internal_cancellation : trigger_third_party_cancellation
   end
 
   def trigger_internal_cancellation
