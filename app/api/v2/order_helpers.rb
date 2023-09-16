@@ -5,7 +5,7 @@ module API
     module OrderHelpers
 
       def build_order(attrs)
-        #Rails.logger.info { "PMC 1 - OrderHelpers build_order" }
+        Rails.logger.info { "order_helpers.rb build_order" }
 
         (attrs[:side] == 'sell' ? OrderAsk : OrderBid).new \
           state:         ::Order::PENDING,
@@ -27,14 +27,13 @@ module API
           ActiveRecord::RecordInvalid => 'market.order.invalid_volume_or_price'
         }
 
+        Rails.logger.info { "order_helpers.rb create_order build_order" }
         order = build_order(attrs)
-
-        #Rails.logger.info { "PMC 3 - OrderHelpers create_order" }
-        # PMC seems to fail here
+        Rails.logger.info { "order_helpers.rb create_order submit_order" }
         order.submit_order
-        #Rails.logger.info { "PMC 4 - OrderHelpers create_order" }
+        Rails.logger.info { "order_helpers.rb create_order order" }
         order
-        #Rails.logger.info { "PMC 5 - OrderHelpers create_order" }
+
         # TODO: Make more specific error message for ActiveRecord::RecordInvalid.
       rescue StandardError => e
         if create_order_errors.include?(e.class)
@@ -48,7 +47,7 @@ module API
       end
 
       def order_param
-        #Rails.logger.info { "PMC 1 - OrderHelpers order_param" }
+        Rails.logger.info { "order_helpers.rb order_param" }
         params[:order_by].downcase == 'asc' ? 'id asc' : 'id desc'
       end
     end

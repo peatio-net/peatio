@@ -96,11 +96,11 @@ module Ethereum
         .to_d
         .yield_self { |amount| convert_from_base_unit(amount) }
       else
-        Rails.logger.warn { "PMC line 100 - load_balance! - Currency: #{@currency[:id]}, native_currency_id: #{native_currency_id},  contract address: #{contract_address_option}"}
+        Rails.logger.info { "wallet_abstract.rb - load_balance! - Currency: #{@currency[:id]}, native_currency_id: #{native_currency_id},  contract address: #{contract_address_option}"}
         raise Peatio::Wallet::ClientError.new("Currency #{@currency[:id]} doesn't have option #{contract_address_option}")
       end
     rescue Ethereum::Client::Error => e
-      Rails.logger.warn { "PMC line 104 - load_balance! - Currency: #{@currency[:id]}, native_currency_id: #{native_currency_id},  contract address: #{contract_address_option}"}
+      Rails.logger.info { "wallet_abstract.rb - load_balance! - Currency: #{@currency[:id]}, native_currency_id: #{native_currency_id},  contract address: #{contract_address_option}"}
       raise Peatio::Wallet::ClientError, e
     end
 

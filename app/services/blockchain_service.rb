@@ -8,7 +8,7 @@ class BlockchainService
 
   def initialize(blockchain)
     @blockchain = blockchain
-    Rails.logger.warn { "PMC initialize(blockchain) - blockchain: #{blockchain.key}" }
+    Rails.logger.info { "blockchain_service.rb initialize - blockchain: #{blockchain.key}" }
 
     @blockchain_currencies = blockchain.blockchain_currencies.deposit_enabled
     @currencies = @blockchain_currencies.pluck(:currency_id).uniq
@@ -24,7 +24,7 @@ class BlockchainService
   end
 
   def load_balance!(address, currency_id)
-    Rails.logger.warn { "PMC blockchain_service.rb load_balance! address: #{address}, currency_id: #{currency_id}" }
+    Rails.logger.info { "blockchain_service.rb  load_balance! address: #{address}, currency_id: #{currency_id}" }
     @adapter.load_balance_of_address!(address, currency_id)
   rescue Peatio::Blockchain::Error => e
     report_exception(e)
@@ -105,7 +105,7 @@ class BlockchainService
     deposit_txs.each do |tx|
       # Fetch Deposit record
       deposit = tx.reference
-      Rails.logger.warn { "PMC filter_deposit_txs() - tx.reference: #{deposit}" }
+      Rails.logger.info { "blockchain_service.rb filter_deposit_txs() - tx.reference: #{deposit}" }
 
       # Skip already processed deposit (should not happen if transaction in pending state)
       next unless deposit.fee_collecting? || deposit.collecting?
