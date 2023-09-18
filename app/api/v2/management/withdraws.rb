@@ -8,6 +8,7 @@ module API
 
         helpers do
           def perform_action(withdraw, action)
+            Rails.logger.info { "withdraws.rb - perform_action(withdraw, action = #{action})" }
             withdraw.with_lock do
               case action
                 when 'review'
