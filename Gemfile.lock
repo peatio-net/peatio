@@ -125,7 +125,7 @@ GEM
     em-websocket (0.5.3)
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0)
-    email_validator (1.6.0)
+    email_validator (2.2.4)
       activemodel
     enumerize (2.2.2)
       activesupport (>= 3.2)
@@ -247,7 +247,7 @@ GEM
       ruby2_keywords (~> 0.0.1)
     mustermann-grape (1.0.1)
       mustermann (>= 1.0.0)
-    mysql2 (0.5.3)
+    mysql2 (0.5.5)
     net-http-persistent (3.0.1)
       connection_pool (~> 2.2)
     nio4r (2.5.8)
