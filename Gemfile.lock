@@ -257,8 +257,8 @@ GEM
     parallel (1.21.0)
     parser (3.1.0.0)
       ast (~> 2.4.1)
-    peatio (2.6.5)
-      activemodel (> 5.2, <= 6.0.0)
+    peatio (3.1.0)
+      activemodel (> 5.2)
       amqp
       bunny
       clamp
