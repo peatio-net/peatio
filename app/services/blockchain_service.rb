@@ -73,7 +73,7 @@ class BlockchainService
   end
 
   def update_height(block_number)
-    raise Error, "#{blockchain.name} height was reset." if blockchain.height != blockchain.reload.height
+    raise Error, "#{blockchain.name} height was reset. blockchain.height: #{blockchain.height} != blockchain.reload.height: #{blockchain.reload.height}" if blockchain.height != blockchain.reload.height
 
     # NOTE: We use update_column to not change updated_at timestamp
     # because we use it for detecting blockchain configuration changes see Workers::Daemon::Blockchain#run.
@@ -82,7 +82,6 @@ class BlockchainService
 
   private
 
-  def filter_deposits(block)
     addresses = PaymentAddress.where(wallet: Wallet.deposit.with_currency(@currencies),
                                      blockchain_key: @blockchain.key, address: block.transactions.map(&:to_address)).pluck(:address)
     block.select { |transaction| transaction.to_address.in?(addresses) }
@@ -115,8 +114,13 @@ class BlockchainService
       block_tx = adapter.fetch_transaction(block_tx) if @adapter.respond_to?(:fetch_transaction) && (block_tx.status.pending? || block_tx.fee.blank?)
 
       # Update fee that was paid after execution
-      Rails.logger.info { "blockchain_service.rb filter_deposit_txs() - tx.update! - fee: #{block_tx.fee}, block_number: #{block_tx.block_number}, fee_currency_id: #{block_tx.fee_currency_id}" }
-      tx.update!(fee: block_tx.fee, block_number: block_tx.block_number, fee_currency_id: block_tx.fee_currency_id )
+      Rails.logger.info { "blockchain_service.rb filter_deposit_txs() - tx.update! - fee: #{block_tx.fee}, block_number: #{block_tx.block_number}, fee_currency_id: #{fee_currency_id}" }
+
+      if block_tx.fee_currency_id.empty?
+        tx.update!(fee: block_tx.fee, block_number: block_tx.block_number, fee_currency_id: block_tx.currency_id )
+      else
+        tx.update!(fee: block_tx.fee, block_number: block_tx.block_number, fee_currency_id: block_tx.fee_currency_id )
+      end
 
       if block_tx.status.success?
         # If Deposit in fee_collecting state and Transaction for prepare deposit
