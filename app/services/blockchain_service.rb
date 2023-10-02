@@ -115,6 +115,7 @@ class BlockchainService
       block_tx = adapter.fetch_transaction(block_tx) if @adapter.respond_to?(:fetch_transaction) && (block_tx.status.pending? || block_tx.fee.blank?)
 
       # Update fee that was paid after execution
+      Rails.logger.info { "blockchain_service.rb filter_deposit_txs() - tx.update! - fee: #{block_tx.fee}, block_number: #{block_tx.block_number}, fee_currency_id: #{block_tx.fee_currency_id}" }
       tx.update!(fee: block_tx.fee, block_number: block_tx.block_number, fee_currency_id: block_tx.fee_currency_id )
 
       if block_tx.status.success?
