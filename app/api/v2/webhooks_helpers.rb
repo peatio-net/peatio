@@ -246,6 +246,8 @@ module API
           end
 
           if transaction.options.present? && transaction.options[:remote_id].present?
+            Rails.logger.info { "webhooks_helpers.rb - transaction.options[ #{transaction.options[:remote_id]}] "}
+
             if withdraw.txid.blank? && transaction.hash.present?
               withdraw.txid = transaction.hash
               withdraw.save!
