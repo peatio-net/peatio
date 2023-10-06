@@ -117,7 +117,7 @@ class BlockchainService
       # Update fee that was paid after execution
       Rails.logger.info { "blockchain_service.rb filter_deposit_txs() - tx.update! - fee: #{block_tx.fee}, block_number: #{block_tx.block_number}, fee_currency_id: #{block_tx.fee_currency_id}" }
 
-      if block_tx.fee_currency_id.empty?
+      if block_tx.fee_currency_id.nil?
         tx.update!(fee: block_tx.fee, block_number: block_tx.block_number, fee_currency_id: block_tx.currency_id )
       else
         tx.update!(fee: block_tx.fee, block_number: block_tx.block_number, fee_currency_id: block_tx.fee_currency_id )
