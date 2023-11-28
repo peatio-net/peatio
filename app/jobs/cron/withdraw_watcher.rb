@@ -14,7 +14,7 @@ module Jobs
           ::Withdraws::Coin.under_review.each do |withdraw|
             @service = nil
 
-            Rails.logger.info { "Starting processing coin withdraw with id: #{withdraw.id}." }
+            Rails.logger.info { "Starting processing coin withdraw with id: #{withdraw.id}, currency: #{withdraw.currency_id}, blockchain: #{withdraw.blockchain_key} and state: #{withdraw.aasm_state}." }
 
             unless withdraw.remote_id
               Rails.logger.warn { "Withdraw with id: #{withdraw.id}, currency: #{withdraw.currency_id}, blockchain: #{withdraw.blockchain_key} and state: #{withdraw.aasm_state} does not have a remote_id, skipping." }
@@ -48,6 +48,7 @@ module Jobs
         def process_confirming_withdrawals
           ::Withdraws::Coin.confirming.each do |withdraw|
             @service = nil
+            Rails.logger.info { "process_confirming_withdrawals with id: #{withdraw.id}, currency: #{withdraw.currency_id}, blockchain: #{withdraw.blockchain_key} and state: #{withdraw.aasm_state}." }
 
             unless withdraw.remote_id
               Rails.logger.warn { "Withdraw with id: #{withdraw.id}, currency: #{withdraw.currency_id}, blockchain: #{withdraw.blockchain_key} and state: #{withdraw.aasm_state} does not have a remote_id, skipping." }
