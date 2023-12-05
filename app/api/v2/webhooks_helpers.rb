@@ -128,7 +128,11 @@ module API
           end
 
           if tx.present?
-            tx.update!(fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.fee_currency_id)
+            if transaction.fee_currency_id.nil?
+              tx.update!(fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.currency_id)
+            else
+              tx.update!(fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.fee_currency_id)
+            end
 
             # Confirm fee collection in case of successful transaction
             if transaction.status.success?
@@ -178,7 +182,11 @@ module API
           next if tx.blank?
           deposit = tx.reference
           if transaction.status.success? && deposit.collecting?
-            tx.update!(fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.fee_currency_id)
+            if transaction.fee_currency_id.nil?
+              tx.update!(fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.currency_id)
+            else
+              tx.update!(fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.fee_currency_id)
+            end
 
             updated_spread = deposit.spread.map do |spread_tx|
               spread_tx.deep_symbolize_keys!
@@ -221,7 +229,12 @@ module API
           Rails.logger.info { "Withdraw transaction detected: #{transaction.inspect}" }
           # Select transaction to update txid, fee currency, fee, block number if needed
           tx = Transaction.find_by(reference: withdrawal, status: :pending)
-          tx.update!(txid: transaction.hash, fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.fee_currency_id)
+
+          if transaction.fee_currency_id.nil?
+            tx.update!(txid: transaction.hash, fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.currency_id)
+          else
+            tx.update!(txid: transaction.hash, fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.fee_currency_id)
+          end
 
           if transaction.status.failed?
             withdrawal.fail!
@@ -257,7 +270,11 @@ module API
 
           # Select transaction to update txid, fee currency, fee, block number if needed
           tx = Transaction.find_by(reference: withdraw, status: :pending)
-          tx.update!(txid: transaction.hash, fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.fee_currency_id)
+          if transaction.fee_currency_id.nil?
+            tx.update!(txid: transaction.hash, fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.currency_id)
+          else
+            tx.update!(txid: transaction.hash, fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.fee_currency_id)
+          end
 
           Rails.logger.info { "Withdraw transaction detected: #{transaction.inspect}" }
           if transaction.status.failed?

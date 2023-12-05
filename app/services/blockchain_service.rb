@@ -229,7 +229,12 @@ class BlockchainService
     transaction = adapter.fetch_transaction(transaction) if @adapter.respond_to?(:fetch_transaction) && transaction.status.pending?
 
     db_tx = Transaction.find_by(txid: transaction.hash)
-    db_tx.update!(fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.fee_currency_id)
+
+    if transaction.fee_currency_id.nil?
+      db_tx.update!(fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.currency_id)
+    else
+      db_tx.update!(fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.fee_currency_id)
+    end
 
     # Manually calculating withdrawal confirmations, because blockchain height is not updated yet.
     if transaction.status.failed?
