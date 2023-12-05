@@ -53,7 +53,7 @@ steps:
     path: /cache
 
 - name: run-rspec
-  image: ruby:2.6.6
+  image: ruby:2.6.7
   environment:
     DATABASE_HOST: database
     INFLUXDB_HOST: influxdb
@@ -82,7 +82,7 @@ steps:
     path: /cache
 
 - name: docs-generate
-  image: quay.io/openware/ruby-node:2.6.6
+  image: quay.io/openware/ruby-node:2.6.7
   environment:
     DATABASE_HOST: database
     INFLUXDB_HOST: influxdb
@@ -160,7 +160,7 @@ steps:
     path: /cache
 
 - name: run-rspec
-  image: ruby:2.6.6
+  image: ruby:2.6.7
   environment:
     DATABASE_HOST: "mariadb"
     DATABASE_SUPPORT_JSON: "false"
@@ -241,7 +241,7 @@ steps:
     path: /cache
 
 - name: run-rspec
-  image: ruby:2.6.6
+  image: ruby:2.6.7
   environment:
     DATABASE_HOST: "mysql"
     INFLUXDB_HOST: influxdb
@@ -319,7 +319,7 @@ steps:
     path: /cache
 
 - name: run-rspec
-  image: ruby:2.6.6
+  image: ruby:2.6.7
   environment:
     DATABASE_HOST: "postgres"
     DATABASE_USER: "postgres"
