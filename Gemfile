@@ -3,7 +3,7 @@
 
 source 'https://rubygems.org'
 
-ruby '~> 2.7.8'
+ruby '~> 2.7.4'
 
 gem 'ransack', '~> 2.3.2'
 gem 'rails', '~> 5.2.4.5'
@@ -52,7 +52,7 @@ gem 'jwt-rack', '~> 0.1.0', require: false
 gem 'env-tweaks', '~> 1.0.0'
 gem 'vault', '~> 0.12', require: false
 gem 'bootsnap', '>= 1.1.0', require: false
-gem 'net-http-persistent', '~> 3.0.1'
+gem 'net-http-persistent', '~> 4.0.2'
 gem 'influxdb', '~> 0.7.0'
 gem 'safe_yaml', '~> 1.0.5', require: 'safe_yaml/load'
 gem 'composite_primary_keys', '~> 11.3.1'
