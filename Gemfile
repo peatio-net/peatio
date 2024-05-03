@@ -5,57 +5,57 @@ source 'https://rubygems.org'
 
 ruby '~> 2.7.8'
 
-gem 'ransack', '~> 2.3.2'
-gem 'rails', '~> 5.2.4.5'
-gem 'puma', '~> 4.3.8'
-gem 'mysql2', '~> 0.5.5'
-gem 'redis', '~> 4.1.2', require: ['redis', 'redis/connection/hiredis']
-gem 'hiredis', '~> 0.6.0'
-gem 'figaro', '~> 1.2.0'
-gem 'hashie', '~> 3.6.0'
 gem 'aasm', '~> 5.0.8'
+gem 'arel-is-blank', '~> 1.0.0'
+gem 'better-faraday', '~> 1.0.5'
+gem 'bootsnap', '>= 1.1.0', require: false
 gem 'bunny', '~> 2.14.4'
 gem 'cancancan', '~> 3.1.0'
+gem 'cash-addr', '~> 0.2.0', require: 'cash_addr'
+gem 'composite_primary_keys', '~> 11.3.1'
+gem 'digest-sha3', '~> 1.1.0'
+gem 'email_validator', '~> 2.2.4'
+gem 'em-synchrony', '~> 1.0'
 gem 'enumerize', '~> 2.2.2'
-gem 'kaminari', '~> 1.2.1'
-gem 'rbtree', '~> 0.4.2'
-gem 'grape', '~> 1.3.1'
-gem 'grape-entity', '~> 0.7.1'
-gem 'grape-swagger', '~> 0.30.1'
-gem 'grape-swagger-ui', '~> 2.2.8'
-gem 'grape-swagger-entity', '~> 0.2.5'
-gem 'grape_logging', '~> 1.8.0'
-gem 'rack-attack', '~> 5.4.2'
+gem 'env-tweaks', '~> 1.0.0'
+gem 'eventmachine', '~> 1.2'
 gem 'faraday', '~> 0.17'
-gem 'better-faraday', '~> 1.0.5'
 gem 'faraday_middleware', '~> 0.13.1'
 gem 'faye', '~> 1.4'
-gem 'eventmachine', '~> 1.2'
-gem 'em-synchrony', '~> 1.0'
-gem 'jwt', '~> 2.2.0'
-gem 'email_validator', '~> 2.2.4'
-gem 'validate_url', '~> 1.0.4'
+gem 'figaro', '~> 1.2.0'
 gem 'god', '~> 0.13.7', require: false
-gem 'arel-is-blank', '~> 1.0.0'
-gem 'sentry-raven', '~> 2.9.0', require: false
+gem 'grape', '~> 1.3.1'
+gem 'grape_logging', '~> 1.8.0'
+gem 'grape-entity', '~> 0.7.1'
+gem 'grape-swagger', '~> 0.30.1'
+gem 'grape-swagger-entity', '~> 0.2.5'
+gem 'grape-swagger-ui', '~> 2.2.8'
+gem 'hashie', '~> 3.6.0'
+gem 'hiredis', '~> 0.6.0'
+gem 'influxdb', '~> 0.8.1'
+gem 'irix', '~> 2.6.0'
+gem 'jwt', '~> 2.2.0'
+gem 'jwt-multisig', '~> 1.0.0'
+gem 'jwt-rack', '~> 0.1.0', require: false
+gem 'kaminari', '~> 1.2.1'
 gem 'memoist', '~> 0.16.0'
 gem 'method-not-implemented', '~> 1.0.1'
-gem 'validates_lengths_from_database', '~> 0.7.0'
-gem 'jwt-multisig', '~> 1.0.0'
-gem 'cash-addr', '~> 0.2.0', require: 'cash_addr'
-gem 'digest-sha3', '~> 1.1.0'
-gem 'scout_apm', '~> 2.4', require: false
-gem 'peatio', '3.1.1'
-gem 'irix', '~> 2.6.0'
-gem 'rack-cors', '~> 1.0.6', require: false
-gem 'jwt-rack', '~> 0.1.0', require: false
-gem 'env-tweaks', '~> 1.0.0'
-gem 'vault', '~> 0.12', require: false
-gem 'bootsnap', '>= 1.1.0', require: false
+gem 'mysql2', '~> 0.5.5'
 gem 'net-http-persistent', '~> 3.0.1'
-gem 'influxdb', '~> 0.7.0'
+gem 'peatio', '3.1.1'
+gem 'puma', '~> 4.3.8'
+gem 'rack-attack', '~> 5.4.2'
+gem 'rack-cors', '~> 1.0.6', require: false
+gem 'rails', '~> 5.2.4.5'
+gem 'ransack', '~> 2.3.2'
+gem 'rbtree', '~> 0.4.2'
+gem 'redis', '~> 4.1.2', require: ['redis', 'redis/connection/hiredis']
 gem 'safe_yaml', '~> 1.0.5', require: 'safe_yaml/load'
-gem 'composite_primary_keys', '~> 11.3.1'
+gem 'scout_apm', '~> 2.4', require: false
+gem 'sentry-raven', '~> 2.9.0', require: false
+gem 'validate_url', '~> 1.0.4'
+gem 'validates_lengths_from_database', '~> 0.7.0'
+gem 'vault', '~> 0.18.2', require: false
 
 group :development, :test do
   gem 'irb'
@@ -89,3 +89,4 @@ Dir.glob File.expand_path('../Gemfile.plugin', __FILE__) do |file|
 end
 
 gem "pg", "~> 1.2"
+
