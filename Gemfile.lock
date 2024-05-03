@@ -189,7 +189,7 @@ GEM
     http_parser.rb (0.8.0)
     i18n (1.8.11)
       concurrent-ruby (~> 1.0)
-    influxdb (0.7.0)
+    influxdb (0.8.1)
     io-console (0.5.11)
     irb (1.4.1)
       reline (>= 0.3.0)
@@ -488,7 +488,7 @@ DEPENDENCIES
   grape_on_rails_routes (~> 0.3.2)
   hashie (~> 3.6.0)
   hiredis (~> 0.6.0)
-  influxdb (~> 0.7.0)
+  influxdb (~> 0.8.1)
   irb
   irix (~> 2.6.0)
   jwt (~> 2.2.0)
