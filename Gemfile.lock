@@ -440,7 +440,7 @@ GEM
       public_suffix
     validates_lengths_from_database (0.7.0)
       activerecord (>= 3)
-    vault (0.16.0)
+    vault (0.18.2)
       aws-sigv4
     webmock (3.14.0)
       addressable (>= 2.8.0)
@@ -527,7 +527,7 @@ DEPENDENCIES
   timecop (~> 0.9)
   validate_url (~> 1.0.4)
   validates_lengths_from_database (~> 0.7.0)
-  vault (~> 0.12)
+  vault (~> 0.18.2)
   webmock (~> 3.5)
 
 RUBY VERSION
