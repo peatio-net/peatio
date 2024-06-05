@@ -1,0 +1,30 @@
+---
+kind: pipeline
+name: default
+
+steps:
+  - name: Run rspec
+    image: ruby:2.6
+    commands:
+      - gem install bundler:2.0.2
+      - bundle install --jobs=$(nproc) --retry=3 --path vendor/bundle
+      - bundle exec rspec
+  
+  - name: Release gem
+    image: ruby:2.6
+    environment:
+      GEM_CREDENTIALS:
+        from_secret: gem_credentials
+    commands:
+      - mkdir -p ~/.gem
+      - echo $GEM_CREDENTIALS | base64 -d > ~/.gem/credentials
+      - chmod 0600 ~/.gem/credentials
+      - gem build irix.gemspec
+      - gem push irix-*.gem
+    when:
+      branch:
+        - master
+
+trigger:
+  event:
+    - push
