@@ -24,9 +24,10 @@ Gem::Specification.new do |spec|
   spec.add_dependency "em-synchrony", "~> 1.0"
   spec.add_dependency "em-websocket"
   spec.add_dependency "eventmachine"
-  spec.add_dependency "faraday_middleware", "~> 0.13.1"
+  #spec.add_dependency "faraday_middleware", "~> 0.13.1"
+  spec.add_dependency "faraday", "~> 1.0"
   spec.add_dependency "faye", "~> 1.2"
-  spec.add_dependency "peatio", ">= 2.4.2"
+  spec.add_dependency "peatio", ">= 3.1.1"
 
   spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "em-spec"
