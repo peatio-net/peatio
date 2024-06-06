@@ -55,7 +55,7 @@ gem 'peatio-litecoin', '~> 3.1'
 gem 'peatio-ripple', '~> 3.1'
 
 # gem 'irix', '~> 3.1.1'
-#gem 'irix', path: "/home/app/lib/irix-3.1.1.gem"
+#gem 'irix', path: "/home/app/peatio/app/lib/irix-3.1.1.gem"
 
 gem 'rack-cors', '~> 1.0.6', require: false
 gem 'jwt-rack', '~> 0.1.0', require: false
