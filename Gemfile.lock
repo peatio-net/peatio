@@ -533,11 +533,8 @@ DEPENDENCIES
   hashie (~> 3.6.0)
   hiredis (~> 0.6.0)
   influxdb (~> 0.7.0)
-<<<<<<< HEAD
   irb
   irix3 (~> 3.1.1)
-=======
->>>>>>> feat/peter/update-irix
   jwt (~> 2.2.0)
   jwt-multisig (~> 1.0.0)
   jwt-rack (~> 0.1.0)
