@@ -10,7 +10,7 @@ MAINTAINER lbellet@heliostech.fr
 # See https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables-build-arg
 #
 ARG RAILS_ENV=production
-ENV RAILS_ENV=${RAILS_ENV} APP_HOME=/home/app KAIGARA_VERSION=0.1.29
+ENV RAILS_ENV=${RAILS_ENV} APP_HOME=/home/app KAIGARA_VERSION=0.1.34
 
 # Allow customization of user ID and group ID (it's useful when you use Docker bind mounts)
 ARG UID=1000
@@ -29,8 +29,6 @@ RUN apt-get update && apt-get upgrade -y
 RUN apt-get install default-libmysqlclient-dev -y
 
 # Install Kaigara
-# ARG KAIGARA_VERSION=v1.0.29
-ARG KAIGARA_VERSION=0.1.34
 RUN curl -Lo /usr/bin/kaigara https://github.com/openware/kaigara/releases/download/${KAIGARA_VERSION}/kaigara \
   && chmod +x /usr/bin/kaigara
 
@@ -67,8 +65,7 @@ FROM base
 # Copy Gemfile.plugin for installing plugins.
 COPY --chown=app:app Gemfile.plugin Gemfile.lock $APP_HOME/
 
-# Copy Gemfile.plugin for installing plugins.
-COPY --chown=app:app Gemfile.plugin Gemfile.lock $APP_HOME/
-
 # Install plugins.
+RUN gem install --local /gems/irix-3.2.1.gem
+
 RUN bundle install --path /opt/vendor/bundle --jobs $(nproc)
