@@ -16,6 +16,10 @@ class Account < ApplicationRecord
 
   ZERO = 0.to_d
 
+  # PMC
+  TMP25 = 119
+  DEALER_MEMBER_ID = TMP25.to_i
+
   validates :member_id, uniqueness: { scope: %i[currency_id type] }
   validates :balance, :locked, numericality: { greater_than_or_equal_to: 0.to_d }
 
@@ -43,7 +47,7 @@ class Account < ApplicationRecord
   end
 
   def attributes_after_plus_funds!(amount)
-    if amount <= ZERO
+    if amount <= ZERO and (member_id != 119)
       raise AccountError, "Cannot add funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance})."
     end
 
@@ -60,7 +64,7 @@ class Account < ApplicationRecord
   end
 
   def attributes_after_plus_locked_funds!(amount)
-    if amount <= ZERO
+    if amount <= ZERO  and (member_id != 119)
       raise AccountError, "Cannot add funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, locked: #{locked})."
     end
 
@@ -77,7 +81,7 @@ class Account < ApplicationRecord
   end
 
   def attributes_after_sub_funds!(amount)
-    if amount <= ZERO || amount > balance
+    if (amount <= ZERO || amount > balance)  and (member_id != 119)
       raise AccountError, "Cannot subtract funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance})."
     end
 
@@ -94,7 +98,7 @@ class Account < ApplicationRecord
   end
 
   def attributes_after_lock_funds!(amount)
-    if amount <= ZERO || amount > balance
+    if (amount <= ZERO || amount > balance) and (member_id != 119)
       raise AccountError, "Cannot lock funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance}, locked: #{locked})."
     end
 
@@ -111,7 +115,7 @@ class Account < ApplicationRecord
   end
 
   def attributes_after_unlock_funds!(amount)
-    if amount <= ZERO || amount > locked
+    if (amount <= ZERO || amount > locked) and (member_id != 119)
       raise AccountError, "Cannot unlock funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, balance: #{balance} locked: #{locked})."
     end
 
@@ -128,7 +132,7 @@ class Account < ApplicationRecord
   end
 
   def attributes_after_unlock_and_sub_funds!(amount)
-    if amount <= ZERO || amount > locked
+    if (amount <= ZERO || amount > locked) and (member_id != 119)
       raise AccountError, "Cannot unlock and sub funds (member id: #{member_id}, currency id: #{currency_id}, amount: #{amount}, locked: #{locked})."
     end
 

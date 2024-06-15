@@ -8,6 +8,8 @@ class BlockchainService
 
   def initialize(blockchain)
     @blockchain = blockchain
+    Rails.logger.info { "blockchain_service.rb initialize - blockchain: #{blockchain.key}" }
+
     @blockchain_currencies = blockchain.blockchain_currencies.deposit_enabled
     @currencies = @blockchain_currencies.pluck(:currency_id).uniq
     @whitelisted_addresses = blockchain.whitelisted_smart_contracts.active
@@ -22,6 +24,7 @@ class BlockchainService
   end
 
   def load_balance!(address, currency_id)
+    Rails.logger.info { "blockchain_service.rb  load_balance! address: #{address}, currency_id: #{currency_id}" }
     @adapter.load_balance_of_address!(address, currency_id)
   rescue Peatio::Blockchain::Error => e
     report_exception(e)
@@ -70,7 +73,7 @@ class BlockchainService
   end
 
   def update_height(block_number)
-    raise Error, "#{blockchain.name} height was reset." if blockchain.height != blockchain.reload.height
+    raise Error, "#{blockchain.name} height was reset. " if blockchain.height != blockchain.reload.height
 
     # NOTE: We use update_column to not change updated_at timestamp
     # because we use it for detecting blockchain configuration changes see Workers::Daemon::Blockchain#run.
@@ -102,6 +105,7 @@ class BlockchainService
     deposit_txs.each do |tx|
       # Fetch Deposit record
       deposit = tx.reference
+      Rails.logger.info { "blockchain_service.rb filter_deposit_txs() - tx.reference: #{deposit}" }
 
       # Skip already processed deposit (should not happen if transaction in pending state)
       next unless deposit.fee_collecting? || deposit.collecting?
@@ -111,7 +115,13 @@ class BlockchainService
       block_tx = adapter.fetch_transaction(block_tx) if @adapter.respond_to?(:fetch_transaction) && (block_tx.status.pending? || block_tx.fee.blank?)
 
       # Update fee that was paid after execution
-      tx.update!(fee: block_tx.fee, block_number: block_tx.block_number, fee_currency_id: block_tx.fee_currency_id )
+      Rails.logger.info { "blockchain_service.rb filter_deposit_txs() - tx.update! - fee: #{block_tx.fee}, block_number: #{block_tx.block_number}, fee_currency_id: #{block_tx.fee_currency_id}" }
+
+      if block_tx.fee_currency_id.nil?
+        tx.update!(fee: block_tx.fee, block_number: block_tx.block_number, fee_currency_id: block_tx.currency_id )
+      else
+        tx.update!(fee: block_tx.fee, block_number: block_tx.block_number, fee_currency_id: block_tx.fee_currency_id )
+      end
 
       if block_tx.status.success?
         # If Deposit in fee_collecting state and Transaction for prepare deposit
@@ -219,7 +229,12 @@ class BlockchainService
     transaction = adapter.fetch_transaction(transaction) if @adapter.respond_to?(:fetch_transaction) && transaction.status.pending?
 
     db_tx = Transaction.find_by(txid: transaction.hash)
-    db_tx.update!(fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.fee_currency_id)
+
+    if transaction.fee_currency_id.nil?
+      db_tx.update!(fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.currency_id)
+    else
+      db_tx.update!(fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.fee_currency_id)
+    end
 
     # Manually calculating withdrawal confirmations, because blockchain height is not updated yet.
     if transaction.status.failed?
