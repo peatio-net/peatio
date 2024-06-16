@@ -65,7 +65,7 @@ class Blockchain < ApplicationRecord
   end
 
   def blockchain_api
-    BlockchainService.new(self)
+      BlockchainService.new(self)
   end
 
   # The latest block which blockchain worker has processed

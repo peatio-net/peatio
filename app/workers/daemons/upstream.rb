@@ -17,7 +17,9 @@ module Workers
                        market.symbol
                      end
 
+            Rails.logger.info "Upstream with engine name:  #{engine.name} driver: #{engine.driver} for market.data: #{market.data} ws_connect"
             configs = engine.data.merge('source' => market.symbol, 'amqp' => ::AMQP::Queue, 'target' => target)
+            Rails.logger.info "Upstream with driver #{engine.driver} for #{market.symbol} ws_connect"
 
             upstream.new(configs).ws_connect
             Rails.logger.info "Upstream with driver #{engine.driver} for #{market.symbol} started"

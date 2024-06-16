@@ -1,4 +1,4 @@
-FROM ruby:2.6.6 as base
+FROM ruby:2.7.8 as base
 
 MAINTAINER lbellet@heliostech.fr
 
@@ -10,7 +10,7 @@ MAINTAINER lbellet@heliostech.fr
 # See https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables-build-arg
 #
 ARG RAILS_ENV=production
-ENV RAILS_ENV=${RAILS_ENV} APP_HOME=/home/app KAIGARA_VERSION=0.1.29
+ENV RAILS_ENV=${RAILS_ENV} APP_HOME=/home/app KAIGARA_VERSION=0.1.34
 
 # Allow customization of user ID and group ID (it's useful when you use Docker bind mounts)
 ARG UID=1000
@@ -37,7 +37,7 @@ WORKDIR $APP_HOME
 # Install dependencies defined in Gemfile.
 COPY --chown=app:app Gemfile Gemfile.lock $APP_HOME/
 RUN mkdir -p /opt/vendor/bundle \
-  && gem install bundler:2.1.4 \
+  && gem install bundler:2.4.7 \
   && chown -R app:app /opt/vendor $APP_HOME \
   && su app -s /bin/bash -c "bundle install --jobs $(nproc) --path /opt/vendor/bundle"
 
@@ -66,4 +66,6 @@ FROM base
 COPY --chown=app:app Gemfile.plugin Gemfile.lock $APP_HOME/
 
 # Install plugins.
+RUN gem install --local /gems/irix-3.2.1.gem
+
 RUN bundle install --path /opt/vendor/bundle --jobs $(nproc)

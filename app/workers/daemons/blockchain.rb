@@ -31,6 +31,7 @@ module Workers
                   next
                 end
 
+
                 from_block = @blockchain.height || 0
 
                 (from_block..bc_service.latest_block_number).each do |block_id|

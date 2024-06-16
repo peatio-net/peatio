@@ -23,7 +23,7 @@ module Peatio
 
       def parse(configs)
         hosts = configs[:host]
-        configs[:host] = hosts[Zlib::crc32(configs[:keyshard].to_s) % hosts.count]
+        configs[:host] = "10.0.0.9"
         configs
       end
     end

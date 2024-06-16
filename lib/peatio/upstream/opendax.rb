@@ -5,6 +5,8 @@ module Peatio
     class Opendax < Peatio::Upstream::Base
       def initialize(config)
         super
+        Rails.logger.info "opendax.rb class Opendax config[rest]: #{config['rest']} for config[websocket]: #{config['websocket']}/public"
+
         @connection = Faraday.new(url: "#{config['rest']}") do |builder|
           builder.response :json
           builder.response :logger if config["debug"]

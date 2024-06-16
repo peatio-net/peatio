@@ -41,7 +41,9 @@ class Engine < ApplicationRecord
   # == Instance Methods =====================================================
 
   def peatio_engine?
-    self.driver.in?(PEATIO_ENGINE_DRIVERS)
+    # PMC not using finex, so always peatio engine 12-sep-2023
+    # self.driver.in?(PEATIO_ENGINE_DRIVERS)
+    return true
   end
 end
 

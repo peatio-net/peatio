@@ -16,10 +16,13 @@ class WalletService
   end
 
   def build_withdrawal!(withdrawal)
+    Rails.logger.info { "wallet_service.rb - build_withdrawal for currency #{withdrawal.currency}, @wallet.blockchain_key #{@wallet.blockchain_key}" }
+
     blockchain_currency = BlockchainCurrency.find_by(currency: withdrawal.currency,
                                                      blockchain_key: @wallet.blockchain_key)
     @adapter.configure(wallet:   @wallet.to_wallet_api_settings,
                        currency: blockchain_currency.to_blockchain_api_settings)
+    Rails.logger.info { "wallet_service.rb - build_withdrawal to_address #{withdrawal.rid}, currency_id #{withdrawal.currency_id}" }
     transaction = Peatio::Transaction.new(to_address: withdrawal.rid,
                                           amount:     withdrawal.amount,
                                           currency_id: withdrawal.currency_id,

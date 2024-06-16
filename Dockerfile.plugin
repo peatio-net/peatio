@@ -1,5 +1,5 @@
 # Extend base image with plugins.
-FROM rubykube/peatio:latest
+FROM peatio:custom
 
 # Copy Gemfile.plugin for installing plugins.
 COPY --chown=app:app Gemfile.plugin $APP_HOME

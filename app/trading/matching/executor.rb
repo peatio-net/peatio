@@ -197,6 +197,8 @@ module Matching
       real_income_value = income_value - fee
 
       outcome_account.assign_attributes outcome_account.attributes_after_unlock_and_sub_funds!(outcome_value)
+      # pmc ? outcome_account.assign_attributes locked: outcome_account.attributes_after_unlock_and_sub_funds!(outcome_value)
+      
       income_account.assign_attributes income_account.attributes_after_plus_funds!(real_income_value)
 
       order.volume         -= trade.amount

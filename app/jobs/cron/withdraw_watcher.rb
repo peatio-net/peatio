@@ -14,10 +14,10 @@ module Jobs
           ::Withdraws::Coin.under_review.each do |withdraw|
             @service = nil
 
-            Rails.logger.info { "Starting processing coin withdraw with id: #{withdraw.id}." }
+            Rails.logger.info { "Starting processing coin withdraw with id: #{withdraw.id}, currency: #{withdraw.currency_id}, blockchain: #{withdraw.blockchain_key} and state: #{withdraw.aasm_state}." }
 
             unless withdraw.remote_id
-              Rails.logger.warn { "Withdraw with id: #{withdraw.id} and state: #{withdraw.aasm_state} does not have a remote_id, skipping." }
+              Rails.logger.warn { "Withdraw with id: #{withdraw.id}, currency: #{withdraw.currency_id}, blockchain: #{withdraw.blockchain_key} and state: #{withdraw.aasm_state} does not have a remote_id, skipping." }
               next
             end
 
@@ -48,9 +48,10 @@ module Jobs
         def process_confirming_withdrawals
           ::Withdraws::Coin.confirming.each do |withdraw|
             @service = nil
+            Rails.logger.info { "process_confirming_withdrawals with id: #{withdraw.id}, currency: #{withdraw.currency_id}, blockchain: #{withdraw.blockchain_key} and state: #{withdraw.aasm_state}." }
 
             unless withdraw.remote_id
-              Rails.logger.warn { "Withdraw with id: #{withdraw.id} and state: #{withdraw.aasm_state} does not have a remote_id, skipping." }
+              Rails.logger.warn { "Withdraw with id: #{withdraw.id}, currency: #{withdraw.currency_id}, blockchain: #{withdraw.blockchain_key} and state: #{withdraw.aasm_state} does not have a remote_id, skipping." }
               next
             end
 
@@ -84,6 +85,15 @@ module Jobs
         end
 
         def fetch_withdraw_txid(withdraw)
+          tx = fetch_withdraw_status(withdraw)
+          if tx.status.failed?
+            withdraw.fail!
+            return
+          elsif tx.status.rejected?
+            withdraw.reject!
+            return
+          end
+
           withdraw.txid = @service.adapter.fetch_blockchain_transaction_id(withdraw.remote_id)
           return if withdraw.txid.blank?
 
@@ -91,9 +101,14 @@ module Jobs
           withdraw.dispatch!
         end
 
-        def update_withdraw_status(withdraw)
+        def fetch_withdraw_status(withdraw)
           tx = Peatio::Transaction.new
           tx.status = @service.adapter.fetch_withdraw_status(withdraw.remote_id)
+          return tx
+        end
+
+        def update_withdraw_status(withdraw)
+          tx = fetch_withdraw_status(withdraw)
 
           if tx.status.success?
             withdraw.success!
