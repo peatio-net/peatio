@@ -3,7 +3,7 @@
 
 source 'https://rubygems.org'
 
-ruby '~> 2.7.8'
+ruby '~> 3.3.0'
 
 gem 'ransack', '~> 2.3.2'
 gem 'rails', '~> 6.1.0'
@@ -16,7 +16,7 @@ gem 'hashie', '~> 3.6.0'
 gem 'aasm', '~> 5.0.8'
 gem 'bunny', '~> 2.14.4'
 gem 'cancancan', '~> 3.1.0'
-gem 'enumerize', '~> 2.2.2'
+gem 'enumerize', '~> 2.8.1'
 gem 'kaminari', '~> 1.2.1'
 gem 'rbtree', '~> 0.4.2'
 gem 'grape', '~> 1.3.1'
@@ -44,10 +44,10 @@ gem 'method-not-implemented', '~> 1.0.1'
 gem 'validates_lengths_from_database', '~> 0.7.0'
 gem 'jwt-multisig', '~> 1.0.0'
 gem 'cash-addr', '~> 0.2.0', require: 'cash_addr'
-gem 'digest-sha3', '~> 1.1.0'
+gem 'digest-sha3'
 gem 'scout_apm', '~> 2.4', require: false
-gem 'peatio', '~> 3.1', '>= 3.1.1'
-gem 'irix3', '~> 3.1.1'
+gem 'peatio', '~> 3.1.1'
+gem 'irix3', '~> 3.2.1'
 gem 'peatio-bitcoincash', '~> 3.1'
 gem 'peatio-bitgo', '~> 3.1'
 gem 'peatio-dash', '~> 3.1'
@@ -71,8 +71,8 @@ group :development, :test do
   gem 'bump',         '~> 0.7'
   gem 'faker',        '~> 1.8'
   gem 'pry-byebug',   '~> 3.7'
-  gem 'bullet',       '~> 5.9'
-  gem 'grape_on_rails_routes', '~> 0.3.2'
+  gem 'bullet'
+  gem 'grape_on_rails_routes'
 end
 
 group :development do
@@ -98,3 +98,4 @@ Dir.glob File.expand_path('../Gemfile.plugin', __FILE__) do |file|
 end
 
 gem "pg", "~> 1.2"
+gem 'psych', '~> 3.3.2'
