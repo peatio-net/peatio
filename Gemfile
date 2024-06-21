@@ -16,7 +16,7 @@ gem 'hashie', '~> 3.6.0'
 gem 'aasm', '~> 5.0.8'
 gem 'bunny', '~> 2.14.4'
 gem 'cancancan', '~> 3.1.0'
-gem 'enumerize', '~> 2.2.2'
+gem 'enumerize', '~> 2.8.1'
 gem 'kaminari', '~> 1.2.1'
 gem 'rbtree', '~> 0.4.2'
 gem 'grape', '~> 1.3.1'
@@ -47,7 +47,7 @@ gem 'cash-addr', '~> 0.2.0', require: 'cash_addr'
 gem 'digest-sha3', '~> 1.1.0'
 gem 'scout_apm', '~> 2.4', require: false
 gem 'peatio', '~> 3.1', '>= 3.1.1'
-gem 'irix3', '~> 3.1.1'
+gem 'irix3', '~> 3.2.1'
 gem 'peatio-bitcoincash', '~> 3.1'
 gem 'peatio-bitgo', '~> 3.1'
 gem 'peatio-dash', '~> 3.1'
@@ -71,14 +71,17 @@ group :development, :test do
   gem 'bump',         '~> 0.7'
   gem 'faker',        '~> 1.8'
   gem 'pry-byebug',   '~> 3.7'
-  gem 'bullet',       '~> 5.9'
-  gem 'grape_on_rails_routes', '~> 0.3.2'
+  gem 'bullet'
+  gem 'grape_on_rails_routes'
 end
 
 group :development do
   gem 'annotate',   '~> 3.1.0'
   gem 'ruby-prof',  '~> 0.17.0', require: false
-  gem 'listen',     '>= 3.0.5', '< 3.2'
+  gem 'listen', '~> 3.1.5'
+  gem 'rb-inotify', '~> 0.10.0'
+  gem 'ffi', '~> 1.14.1'
+
 end
 
 group :test do
