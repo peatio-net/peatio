@@ -47,7 +47,6 @@ gem 'cash-addr', '~> 0.2.0', require: 'cash_addr'
 gem 'digest-sha3', '~> 1.1.0'
 gem 'scout_apm', '~> 2.4', require: false
 gem 'peatio', '~> 3.1', '>= 3.1.1'
-gem 'irix3', '~> 3.2.1'
 gem 'peatio-bitcoincash', '~> 3.1'
 gem 'peatio-bitgo', '~> 3.1'
 gem 'peatio-dash', '~> 3.1'
