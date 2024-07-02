@@ -37,7 +37,7 @@ gem 'jwt', '~> 2.2.0'
 gem 'email_validator', '~> 2.2.4'
 gem 'validate_url', '~> 1.0.4'
 gem 'god', '~> 0.13.7', require: false
-gem 'arel-is-blank', '~> 1.0.0'
+gem 'arel_extensions', '~> 2.1'
 gem 'sentry-raven', '~> 3.1', require: false
 gem 'memoist', '~> 0.16.0'
 gem 'method-not-implemented', '~> 1.0.1'
@@ -63,10 +63,11 @@ gem 'influxdb', '~> 0.7.0'
 gem 'safe_yaml', '~> 1.0.5', require: 'safe_yaml/load'
 gem 'composite_primary_keys', '~> 13.0.8'
 gem 'vault', '~> 0.12', require: false
-#gem 'psych', '~> 5.1', '>= 5.1.2'
+# gem 'psych', '~> 5.1', '>= 5.1.2'
+gem 'irix3', '~> 3.2.1.1'
 
 group :development, :test do
-#  gem 'irb'
+  # gem 'irb'
   gem 'bump',         '~> 0.7'
   gem 'faker',        '~> 1.8'
   gem 'pry-byebug',   '~> 3.7'
@@ -95,8 +96,8 @@ group :test do
 end
 
 # Load gems from Gemfile.plugin.
-Dir.glob File.expand_path('../Gemfile.plugin', __FILE__) do |file|
-  eval_gemfile file
-end
+# Dir.glob File.expand_path('../Gemfile.plugin', __FILE__) do |file|
+#   eval_gemfile file
+# end
 
 gem "pg", "~> 1.2"
