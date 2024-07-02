@@ -13,9 +13,10 @@ Bundler.require(*Rails.groups)
 
 module Peatio
   class Application < Rails::Application
-
+    config.load_defaults 6.0
+    config.autoloader = :classic
     # Eager loading app dir.
-    config.eager_load_paths += Dir[Rails.root.join('app')]
+    config.autoload_paths += Dir[Rails.root.join('app')]
 
     config.autoload_paths += Dir["#{config.root}/db/migrate/concerns/**/"]
 
@@ -23,7 +24,6 @@ module Peatio
     # There is a lot of constants used over the whole application.
     #   lib/peatio/aasm/locking.rb => AASM::Locking
     config.eager_load_paths += Dir[Rails.root.join('lib/peatio')]
-
     # Configure Sentry as early as possible.
     if ENV['SENTRY_DSN_BACKEND'].present?
       require 'sentry-raven'
