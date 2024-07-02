@@ -48,8 +48,9 @@ Rails.application.configure do
   # Send deprecation notices to registered listeners.
   config.active_support.deprecation = :notify
 
+
   # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::JSONLogFormatter.new
+  config.log_formatter = ActiveSupport::Logger.new(STDOUT)
 
   # Use a different logger for distributed setups.
   # require 'syslog/logger'
@@ -60,7 +61,7 @@ Rails.application.configure do
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
 
-  config.logger.formatter = config.log_formatter
+  config.logger.formatter = JsonLogFormatter.new
 
   # Disable colorize logging in production
   config.colorize_logging = false

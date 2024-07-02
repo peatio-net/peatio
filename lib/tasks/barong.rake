@@ -6,10 +6,12 @@ namespace :barong do
   task levels: :environment do
     url = "https://#{ENV.fetch('BARONG_DOMAIN')}/api/account"
     t   = Authentication.arel_table
+    token_not_blank = t[:token].not_eq(nil).and(t[:token].not_eq(''))
+    member_id_not_blank = t[:member_id].not_eq(nil).and(t[:member_id].not_eq(''))
     Authentication
       .where(provider: :barong)
-      .where(t[:token].is_not_blank)
-      .where(t[:member_id].is_not_blank)
+      .where(token_not_blank)
+      .where(member_id_not_blank)
       .includes(:member)
       .order(updated_at: :asc)
       .limit(1000)

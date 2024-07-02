@@ -1,4 +1,5 @@
-class JSONLogFormatter < ::Logger::Formatter
+require 'json'
+class JsonLogFormatter < ::Logger::Formatter
   def call(severity, time, _progname, msg)
       begin
         obj = JSON.parse msg
