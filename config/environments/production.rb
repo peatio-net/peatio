@@ -1,8 +1,8 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
+require_relative('../initializers/json_log_formatter.rb')
 require File.expand_path('../shared', __FILE__)
-require_relative('../lib/peatio/json_log_formatter.rb')
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
