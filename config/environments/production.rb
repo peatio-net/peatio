@@ -1,6 +1,7 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
+require_relative('../initializers/json_log_formatter.rb')
 require File.expand_path('../shared', __FILE__)
 
 Rails.application.configure do
@@ -50,7 +51,7 @@ Rails.application.configure do
 
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ActiveSupport::Logger.new(STDOUT)
+  config.log_formatter = ::Logger::Formatter.new
 
   # Use a different logger for distributed setups.
   # require 'syslog/logger'

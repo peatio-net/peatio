@@ -1,6 +1,6 @@
-FROM ruby:2.7.8 as base
+FROM ruby:2.7.8 AS base
 
-MAINTAINER lbellet@heliostech.fr
+LABEL MAINTAINER=lbellet@heliostech.fr
 
 # By default image is built using RAILS_ENV=production.
 # You may want to customize it:
@@ -66,6 +66,6 @@ FROM base
 COPY --chown=app:app Gemfile.plugin Gemfile.lock $APP_HOME/
 
 # Install plugins.
-RUN gem install --local /gems/irix-3.2.1.gem
+# RUN gem install --local /gems/irix-3.2.1.gem
 
 RUN bundle install --path /opt/vendor/bundle --jobs $(nproc)
