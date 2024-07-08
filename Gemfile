@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 
 ruby '~> 2.7.8'
 
-gem 'ransack', '~> 2.3.2'
+gem 'ransack', '~> 2.5.0'
 gem 'rails', '~> 6.1.0'
 gem 'puma', '~> 4.3.8'
 gem 'mysql2', '~> 0.5.6'
