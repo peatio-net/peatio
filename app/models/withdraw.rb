@@ -182,8 +182,8 @@ class Withdraw < ApplicationRecord
     def sanitize_execute_sum_queries(member_id)
       squery_24h = ActiveRecord::Base.sanitize_sql_for_conditions([sum_query, member_id, SUCCEED_PROCESSING_STATES, 24.hours.ago])
       squery_1m = ActiveRecord::Base.sanitize_sql_for_conditions([sum_query, member_id, SUCCEED_PROCESSING_STATES, 1.month.ago])
-      sum_withdraws_24_hours = ActiveRecord::Base.connection.exec_query(squery_24h).to_hash.first['sum'].to_d
-      sum_withdraws_1_month = ActiveRecord::Base.connection.exec_query(squery_1m).to_hash.first['sum'].to_d
+      sum_withdraws_24_hours = ActiveRecord::Base.connection.exec_query(squery_24h).to_a.first['sum'].to_d
+      sum_withdraws_1_month = ActiveRecord::Base.connection.exec_query(squery_1m).to_a.first['sum'].to_d
       [sum_withdraws_24_hours, sum_withdraws_1_month]
     end
   end
