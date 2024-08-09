@@ -183,7 +183,7 @@ module Tron
 
     def invalid_transaction?(tx)
       tx['raw_data']['contract'][0]['parameter']['value']['amount'].to_i == 0 \
-         || tx['ret'][0]['contractRet'] == 'REVERT'
+         || tx['ret'].nil? || tx['ret'][0]['contractRet'] == 'REVERT'
     end
 
     def invalid_trc20_transaction?(tx)
