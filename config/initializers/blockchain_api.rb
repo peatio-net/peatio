@@ -4,3 +4,4 @@ Peatio::Blockchain.registry[:parity] = Ethereum::Eth::Blockchain
 Peatio::Blockchain.registry[:"geth-bsc"] = Ethereum::Bsc::Blockchain
 Peatio::Blockchain.registry[:"geth-heco"] = Ethereum::Heco::Blockchain
 Peatio::Blockchain.registry[:fiat] = Peatio::Fiat
+Peatio::Blockchain.registry[:tron] = Tron::Blockchain
