@@ -152,6 +152,7 @@ class Beneficiary < ApplicationRecord
       description: description,
       data:        data,
       pin:         pin,
+      blockchain_key: blockchain_key,
       state:       state,
       sent_at:     sent_at.iso8601,
       created_at:  created_at.iso8601,
