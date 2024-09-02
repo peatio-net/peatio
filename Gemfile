@@ -7,7 +7,7 @@ ruby '~> 2.7.8'
 
 gem 'ransack', '~> 2.5.0'
 gem 'rails', '~> 6.1.0'
-gem 'puma', '~> 4.3.8'
+gem "puma", ">= 5.6.8"
 gem 'mysql2', '~> 0.5.6'
 gem 'redis', '~> 4.1.2', require: ['redis', 'redis/connection/hiredis']
 gem 'hiredis', '~> 0.6.0'
