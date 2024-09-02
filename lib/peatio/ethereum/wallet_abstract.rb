@@ -46,8 +46,7 @@ module Ethereum
     def create_transaction!(transaction, options = {})
       if @currency.dig(:options, contract_address_option).present?
         create_erc20_transaction!(transaction)
-      # PMC extra filters for non-eth evm
-      elsif @currency[:id] == native_currency_id or (@currency[:id] == 'bnb') or (@currency[:id] == 'ht') or (@currency[:id] == 'etc') or (@currency[:id] == 'eth')
+      elsif @currency[:id] == native_currency_id
         create_eth_transaction!(transaction, options)
       else
         raise Peatio::Wallet::ClientError.new("Currency #{@currency[:id]}, native_currency_id = #{native_currency_id}, doesn't have option #{contract_address_option}")
@@ -90,17 +89,15 @@ module Ethereum
     def load_balance!
       if @currency.dig(:options, contract_address_option).present?
         load_erc20_balance(@wallet.fetch(:address))
-      elsif @currency[:id] == native_currency_id or (@currency[:id] == 'bnb') or (@currency[:id] == 'ht') or (@currency[:id] == 'etc') or (@currency[:id] == 'eth')
+      elsif @currency[:id] == native_currency_id
         client.json_rpc(:eth_getBalance, [normalize_address(@wallet.fetch(:address)), 'latest'])
         .hex
         .to_d
         .yield_self { |amount| convert_from_base_unit(amount) }
       else
-        Rails.logger.info { "wallet_abstract.rb - load_balance! - Currency: #{@currency[:id]}, native_currency_id: #{native_currency_id},  contract address: #{contract_address_option}"}
         raise Peatio::Wallet::ClientError.new("Currency #{@currency[:id]} doesn't have option #{contract_address_option}")
       end
     rescue Ethereum::Client::Error => e
-      Rails.logger.info { "wallet_abstract.rb - load_balance! - Currency: #{@currency[:id]}, native_currency_id: #{native_currency_id},  contract address: #{contract_address_option}"}
       raise Peatio::Wallet::ClientError, e
     end
 
