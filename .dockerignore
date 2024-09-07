@@ -21,8 +21,8 @@ ci
 .DS_Store
 *.md
 docs
-tmp
-log
+# tmp
+# log
 .god
 
 # Ignore bundler config
@@ -30,4 +30,3 @@ log
 
 # Ignore locally installed gems
 /vendor/bundle
-
