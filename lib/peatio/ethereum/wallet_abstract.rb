@@ -34,7 +34,7 @@ module Ethereum
     end
 
     def create_address!(options = {})
-      secret = options.fetch(:secret) { PasswordGenerator.generate(64) }
+      secret = options.fetch(:secret) { PasswordGeneratro.generate(64) }
       secret.yield_self do |password|
         { address: normalize_address(client.json_rpc(:personal_newAccount, [password])),
           secret:  password }
@@ -116,6 +116,8 @@ module Ethereum
       options.merge!(DEFAULT_ETH_FEE, currency_options)
 
       amount = convert_to_base_unit(transaction.amount)
+      logger =  ActiveSupport::Logger.new(Rails.root.join('log', 'transaction.log'))
+      logger.info "transaction : #{transaction} , options: #{options}"
 
       if transaction.options.present?
         options[:gas_price] = transaction.options[:gas_price]
@@ -126,6 +128,7 @@ module Ethereum
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i if options.dig(:subtract_fee)
 
+      logger.info "gas_price: #{options[:gas_price]}"
       txid = client.json_rpc(:personal_sendTransaction,
                   [{
                       from:     normalize_address(@wallet.fetch(:address)),
@@ -135,6 +138,7 @@ module Ethereum
                       gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
                     }.compact, @wallet.fetch(:secret)])
 
+      logger.info "txid: #{txid}"
       unless valid_txid?(normalize_txid(txid))
         raise Ethereum::Client::Error, \
               "Withdrawal from #{@wallet.fetch(:address)} to #{transaction.to_address} failed."
@@ -156,12 +160,16 @@ module Ethereum
       data = abi_encode('transfer(address,uint256)',
                         normalize_address(transaction.to_address),
                         '0x' + amount.to_s(16))
+      logger =  ActiveSupport::Logger.new(Rails.root.join('log', 'transaction.log'))
+      logger.info "erc20: transaction : #{transaction} , options: #{options}"
 
       if transaction.options.present?
         options[:gas_price] = transaction.options[:gas_price]
       else
         options[:gas_price] = calculate_gas_price(options)
       end
+
+      logger.info "#{options}"
 
       txid = client.json_rpc(:personal_sendTransaction,
                 [{
@@ -172,6 +180,7 @@ module Ethereum
                     gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
                   }.compact, @wallet.fetch(:secret)])
 
+      logger.info "txid : #{txid}"
       unless valid_txid?(normalize_txid(txid))
         raise Ethereum::Client::Error, \
               "Withdrawal from #{@wallet.fetch(:address)} to #{transaction.to_address} failed."
