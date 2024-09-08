@@ -71,8 +71,7 @@ module EventAPI
         %i[create update].each do |event|
           after_commit on: event, prepend: true do
             if self.class.event_api_settings[:on]&.include?(event)
-              logger =  ActiveSupport::Logger.new(Rails.root.join('log', 'event_api.log'))
-              logger.info "class : #{self.class.name}, id : #{self.id}, event #{event}: , state : #{self.try(:aasm_state)}"
+              Rails.logger.warn "Event Send Mail  class : #{self.class.name}, id : #{self.id}, event #{event}: , state : #{self.try(:aasm_state)}"
               event_api.public_send("notify_record_#{event}d")
             end
           end
