@@ -66,6 +66,8 @@ FROM base
 COPY --chown=app:app Gemfile.plugin Gemfile.lock $APP_HOME/
 
 # Install plugins.
+RUN mkdir -p ${APP_HOME}/log
+
 # RUN gem install --local /gems/irix-3.2.1.gem
 
 RUN bundle install --path /opt/vendor/bundle --jobs $(nproc)
