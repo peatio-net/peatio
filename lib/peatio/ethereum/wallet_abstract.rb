@@ -161,7 +161,7 @@ module Ethereum
                         '0x' + amount.to_s(16))
       Rails.logger.warn "erc20: transaction : #{transaction} , options: #{options}"
 
-      if transaction.options.present?
+      if transaction.options.present? && transaction.options[:gas_price].present?
         options[:gas_price] = transaction.options[:gas_price]
       else
         options[:gas_price] = calculate_gas_price(options)
