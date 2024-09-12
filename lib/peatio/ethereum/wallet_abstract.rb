@@ -116,7 +116,7 @@ module Ethereum
       options.merge!(DEFAULT_ETH_FEE, currency_options)
 
       amount = convert_to_base_unit(transaction.amount)
-      Rails.logger.warn "transaction : #{transaction} , options: #{options}"
+      Rails.logger.warn "transaction : #{transaction.as_json} , options: #{options}"
 
       if transaction.options.present? && transaction.options[:gas_price].present?
         options[:gas_price] = transaction.options[:gas_price]
@@ -159,7 +159,7 @@ module Ethereum
       data = abi_encode('transfer(address,uint256)',
                         normalize_address(transaction.to_address),
                         '0x' + amount.to_s(16))
-      Rails.logger.warn "erc20: transaction : #{transaction} , options: #{options}"
+      Rails.logger.warn "erc20: transaction : #{transaction.as_json} , options: #{options}"
 
       if transaction.options.present? && transaction.options[:gas_price].present?
         options[:gas_price] = transaction.options[:gas_price]
