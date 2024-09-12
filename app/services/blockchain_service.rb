@@ -105,10 +105,11 @@ class BlockchainService
     deposit_txs.each do |tx|
       # Fetch Deposit record
       deposit = tx.reference
+      Rails.logger.info { "blockchain_service.rb filter_deposit_txs() - tx: #{tx}" }
       Rails.logger.info { "blockchain_service.rb filter_deposit_txs() - tx.reference: #{deposit}" }
 
       # Skip already processed deposit (should not happen if transaction in pending state)
-      next unless deposit.fee_collecting? || deposit.collecting?
+      next unless deposit&.fee_collecting? || deposit&.collecting?
 
       # Select tx from block
       block_tx = block.transactions.find { |blck_tx| tx if tx.txid == blck_tx.hash }
