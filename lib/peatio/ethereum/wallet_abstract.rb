@@ -68,7 +68,11 @@ module Ethereum
       # Example: if deposit spreads on three wallets need to collect eth fee for 3 transactions
       fees = convert_from_base_unit(options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i)
       amount = fees * deposit_spread.size
-
+      Rails.logger.warn { "gas_limit: #{options.fetch(:gas_limit).to_i}" }
+      Rails.logger.warn { "gas_price: #{options.fetch(:gas_price).to_i}" }
+      Rails.logger.warn { "fees: #{fees}" }
+      Rails.logger.warn { "deposit_spread : #{deposit_spread.size}, #{deposit_spread}" }
+      Rails.logger.warn { "base_factor: #{@currency.fetch(:base_factor)}" }
       # If fee amount is greater than min collection amount
       # system will detect fee collection as deposit
       # To prevent this system will raise an error
