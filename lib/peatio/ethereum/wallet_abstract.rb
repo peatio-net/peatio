@@ -132,14 +132,13 @@ module Ethereum
       amount -= options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i if options.dig(:subtract_fee)
 
       Rails.logger.warn "gas_price: #{options[:gas_price]}"
-      txid = client.json_rpc(:personal_sendTransaction,
-                  [{
-                      from:     normalize_address(@wallet.fetch(:address)),
-                      to:       normalize_address(transaction.to_address),
-                      value:    '0x' + amount.to_s(16),
-                      gas:      '0x' + options.fetch(:gas_limit).to_i.to_s(16),
-                      gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
-                    }.compact, @wallet.fetch(:secret)])
+      txid = send_transaction({
+                              from:     normalize_address(@wallet.fetch(:address)),
+                              to:       normalize_address(transaction.to_address),
+                              value:    '0x' + amount.to_s(16),
+                              gas:      '0x' + options.fetch(:gas_limit).to_i.to_s(16),
+                              gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
+                             })
 
       Rails.logger.warn "txid: #{txid}"
       unless valid_txid?(normalize_txid(txid))
@@ -173,14 +172,13 @@ module Ethereum
 
       Rails.logger.warn "options: #{options}"
 
-      txid = client.json_rpc(:personal_sendTransaction,
-                [{
-                    from:     normalize_address(@wallet.fetch(:address)),
-                    to:       options.fetch(contract_address_option),
-                    data:     data,
-                    gas:      '0x' + options.fetch(:gas_limit).to_i.to_s(16),
-                    gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
-                  }.compact, @wallet.fetch(:secret)])
+      txid = send_transaction({
+                                from:     normalize_address(@wallet.fetch(:address)),
+                                to:       options.fetch(contract_address_option),
+                                data:     data,
+                                gas:      '0x' + options.fetch(:gas_limit).to_i.to_s(16),
+                                gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
+                              })
 
       Rails.logger.warn "txid : #{txid}"
       unless valid_txid?(normalize_txid(txid))
@@ -241,6 +239,56 @@ module Ethereum
     def client
       uri = @wallet.fetch(:uri) { raise Peatio::Wallet::MissingSettingError, :uri }
       @client ||= Client.new(uri, idle_timeout: 1)
+    end
+
+    def send_transaction(params)
+      begin
+        txid = client.json_rpc(
+          :personal_sendTransaction,
+          [params.compact, @wallet.fetch(:secret)]
+        )
+
+        puts "Transaction sent successfully with txid: #{txid}"
+        return txid
+      rescue => e
+        if e.message.include?('replacement transaction underpriced') || e.message.include?('-32000')
+          puts "Error: replacement transaction underpriced. Retrying with higher gas price..."
+          retry_with_higher_gas_price(params)
+        else
+          raise e
+        end
+      end
+    end
+
+    def retry_with_higher_gas_price(params)
+      max_attempts = 5
+      attempt = 1
+      while attempt < max_attempts
+        begin
+          params[:gasPrice] = '0x' + higher_gas_price(attempt).to_i.to_s(16)
+
+          txid = client.json_rpc(
+              :personal_sendTransaction,
+              [params.compact, @wallet.fetch(:secret)]
+            )
+
+          puts "Transaction retried successfully with txid: #{txid}"
+          return txid
+        rescue => e
+          if e.message.include?('replacement transaction underpriced') || e.message.include?('-32000')
+            puts "Retry attempt #{attempt + 1} failed. Increasing gas price and retrying..."
+            attempt += 1
+          else
+            raise e
+          end
+        end
+      end
+    end
+
+    def higher_gas_price(attempt)
+      current_gas_price = client.json_rpc(:eth_gasPrice, []).to_i(16)
+      increment_factor = 1.2**attempt
+      current_gas_price * increment_factor
     end
   end
 end
