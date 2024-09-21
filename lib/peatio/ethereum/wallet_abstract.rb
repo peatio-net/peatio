@@ -131,7 +131,7 @@ module Ethereum
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i if options.dig(:subtract_fee)
 
-      Rails.logger.warn "gas_price: #{options[:gas_price]}"
+      Rails.logger.warn "gas_price: #{options[:gas_price]}, amount: #{amount}"
       txid = send_transaction({
                               from:     normalize_address(@wallet.fetch(:address)),
                               to:       normalize_address(transaction.to_address),
@@ -242,17 +242,20 @@ module Ethereum
     end
 
     def send_transaction(params)
+      Rails.logger.warn "Start send : #{params}"
       begin
         txid = client.json_rpc(
           :personal_sendTransaction,
           [params.compact, @wallet.fetch(:secret)]
         )
 
-        puts "Transaction sent successfully with txid: #{txid}"
+        Rails.logger.warn "Transaction sent successfully with txid: #{txid}"
         return txid
       rescue => e
+        Rails.logger.error "#{e.message}"
+        Rails.logger.error "#{e.backtrace}"
         if e.message.include?('replacement transaction underpriced') || e.message.include?('-32000')
-          puts "Error: replacement transaction underpriced. Retrying with higher gas price..."
+          Rails.logger.error "Error: replacement transaction underpriced. Retrying with higher gas price..."
           retry_with_higher_gas_price(params)
         else
           raise e
@@ -272,11 +275,13 @@ module Ethereum
               [params.compact, @wallet.fetch(:secret)]
             )
 
-          puts "Transaction retried successfully with txid: #{txid}"
+          Rails.logger.warn "Transaction retried successfully with txid: #{txid}"
           return txid
         rescue => e
+          Rails.logger.error "#{e.message}"
+          Rails.logger.error "#{e.backtrace}"
           if e.message.include?('replacement transaction underpriced') || e.message.include?('-32000')
-            puts "Retry attempt #{attempt + 1} failed. Increasing gas price and retrying..."
+            Rails.logger.warn "Retry attempt #{attempt + 1} failed. Increasing gas price and retrying..."
             attempt += 1
           else
             raise e
