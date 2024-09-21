@@ -111,7 +111,7 @@ module API
             optional :limit,
                      type: { value: Integer, message: 'public.trade.non_integer_limit' },
                      values: { value: 1..1000, message: 'public.trade.invalid_limit' },
-                     default: 100,
+                     default: 500,
                      desc: 'Limit the number of returned trades. Default to 100.'
             optional :timestamp,
                      type: { value: Integer, message: 'public.trade.non_integer_timestamp' },
@@ -136,7 +136,7 @@ module API
             optional :limit,
                      type: { value: Integer, message: 'public.market_depth.non_integer_limit' },
                      values: { value: 1..1000, message: 'public.market_depth.invalid_limit' },
-                     default: 300,
+                     default: 500,
                      desc: 'Limit the number of returned price levels. Default to 300.'
           end
           get ":market/depth", requirements: { market: /[\w\.\-]+/ } do
