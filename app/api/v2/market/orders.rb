@@ -33,7 +33,7 @@ module API
           optional :limit,
                    type: { value: Integer, message: 'market.order.non_integer_limit' },
                    values: { value: 0..1000, message: 'market.order.invalid_limit' },
-                   default: 100,
+                   default: 500,
                    desc: 'Limit the number of returned orders, default to 100.'
           optional :page,
                    type: { value: Integer, message: 'market.order.non_integer_page' },
