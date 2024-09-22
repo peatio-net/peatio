@@ -253,7 +253,6 @@ module Ethereum
         return txid
       rescue => e
         Rails.logger.error "#{e.message}"
-        Rails.logger.error "#{e.backtrace}"
         if e.message.include?('replacement transaction underpriced') || e.message.include?('-32000')
           Rails.logger.error "Error: replacement transaction underpriced. Retrying with higher gas price..."
           retry_with_higher_gas_price(params)
@@ -268,7 +267,7 @@ module Ethereum
       attempt = 1
       while attempt < max_attempts
         begin
-          params[:gasPrice] = '0x' + higher_gas_price(attempt).to_i.to_s(16)
+          params[:gasPrice] = '0x' + higher_gas_price(attempt).to_s(16)
 
           txid = client.json_rpc(
               :personal_sendTransaction,
@@ -279,7 +278,9 @@ module Ethereum
           return txid
         rescue => e
           Rails.logger.error "#{e.message}"
-          Rails.logger.error "#{e.backtrace}"
+          Rails.logger.error "nonce: #{get_nonce}"
+          Rails.logger.error "Retry Gas Price: #{params[:gasPrice]}"
+
           if e.message.include?('replacement transaction underpriced') || e.message.include?('-32000')
             Rails.logger.warn "Retry attempt #{attempt + 1} failed. Increasing gas price and retrying..."
             attempt += 1
@@ -293,7 +294,11 @@ module Ethereum
     def higher_gas_price(attempt)
       current_gas_price = client.json_rpc(:eth_gasPrice, []).to_i(16)
       increment_factor = 1.2**attempt
-      current_gas_price * increment_factor
+      (current_gas_price * increment_factor).to_i
+    end
+
+    def get_nonce
+      nonce = client.json_rpc(:eth_getTransactionCount, [normalize_address(@wallet.fetch(:address)), 'pending'])['result'].to_i(16)
     end
   end
 end
