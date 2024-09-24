@@ -67,7 +67,7 @@ module API
 
             # Add default ordering (position asc) for cases markets where unit position is same.
             search.sorts = ["#{params[:order_by]} #{params[:ordering]}", "position asc"]
-
+            params[:limit] = 500
             present paginate(Rails.cache.fetch("markets_#{params}", expires_in: 600) { search.result.load.to_a }),
                     with: API::V2::Entities::Market,
                     extended: !!params[:extended]
