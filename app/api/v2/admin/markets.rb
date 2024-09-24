@@ -75,7 +75,6 @@ module API
 
           result = ::Market.where(type: params[:type])
                            .order(params[:order_by] => params[:ordering])
-          params[:limit] = 500
           present paginate(result), with: API::V2::Admin::Entities::Market
         end
 
