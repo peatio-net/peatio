@@ -268,7 +268,7 @@ module Ethereum
       while attempt < max_attempts
         begin
           params[:gasPrice] = '0x' + higher_gas_price(attempt).to_s(16)
-          params[:nonce] = '0x' + (get_nonce + 1).to_s(16)
+          params[:nonce] = '0x' + get_nonce.to_s(16)
 
           txid = client.json_rpc(
               :personal_sendTransaction,
