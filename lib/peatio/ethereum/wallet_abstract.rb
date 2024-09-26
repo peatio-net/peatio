@@ -299,9 +299,9 @@ module Ethereum
     end
 
     def get_nonce
-      reponse = client.json_rpc(:eth_getTransactionCount, [@wallet.fetch(:address), 'pending'])
+      response = client.json_rpc(:eth_getTransactionCount, [@wallet.fetch(:address), 'pending'])
       Rails.logger.warn "get nonce: #{reponse}"
-      reponse.transform_keys(&:to_sym)[:result].to_i(16)
+      response.to_i(16)
     end
   end
 end
