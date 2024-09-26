@@ -300,7 +300,6 @@ module Ethereum
 
     def get_nonce
       response = client.json_rpc(:eth_getTransactionCount, [@wallet.fetch(:address), 'pending'])
-      Rails.logger.warn "get nonce: #{reponse}"
       response.to_i(16)
     end
   end
