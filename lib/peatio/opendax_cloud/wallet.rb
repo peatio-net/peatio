@@ -103,7 +103,7 @@ module OpendaxCloud
       # Get transaction state translation which depends on event
       states = OpendaxCloud::Wallet.const_get("#{event.upcase}_TRANSACTION_STATE_TRANSLATIONS")
       res = states.find { |key, values| values.include?(state) }
-
+      Rails.logger.warn { "translate_state: #{event} state: #{state}, res: #{res}" }
       # result consists of array [key, [values]]
       res.first if res.present?
     end

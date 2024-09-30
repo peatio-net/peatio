@@ -80,8 +80,11 @@ module API
         Wallet.active_retired.where(kind: :hot, gateway: request.params[:adapter]).each do |w|
           service = w.service
 
+          Rails.logger.warn { "webhook params: #{request.params}." }
           next unless service.adapter.respond_to?(:trigger_webhook_event)
           transactions = service.trigger_webhook_event(request)
+          Rails.logger.warn { "webhook request: #{request}." }
+          Rails.logger.warn { "webhook transactions: #{transactions}." }
 
           next unless transactions.present?
 
@@ -222,14 +225,14 @@ module API
                                       .find_by(currency_id: transaction.currency_id, txid: transaction.hash)
 
           if withdrawal.blank?
-            Rails.logger.info { "Skipped withdrawal: #{transaction.hash}." }
+            Rails.logger.warn { "Skipped withdrawal: #{transaction.hash}." }
             next
           end
 
-          Rails.logger.info { "Withdraw transaction detected: #{transaction.inspect}" }
+          Rails.logger.warn { "Withdraw transaction detected: #{transaction.inspect}" }
           # Select transaction to update txid, fee currency, fee, block number if needed
           tx = Transaction.find_by(reference: withdrawal, status: :pending)
-
+          Rails.logger.warn { "tx webhook : #{tx}" }
           if transaction.fee_currency_id.nil?
             tx.update!(txid: transaction.hash, fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.currency_id)
           else
