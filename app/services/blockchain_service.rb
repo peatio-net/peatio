@@ -220,7 +220,7 @@ class BlockchainService
 
     # Skip non-existing in database withdrawals.
     if withdrawal.blank?
-      Rails.logger.info { "Skipped withdrawal: #{transaction.hash}." }
+      Rails.logger.warn { "Skipped withdrawal: #{transaction.hash}." }
       return
     end
 
@@ -236,7 +236,6 @@ class BlockchainService
     else
       db_tx.update!(fee: transaction.fee, block_number: transaction.block_number, fee_currency_id: transaction.fee_currency_id)
     end
-
     # Manually calculating withdrawal confirmations, because blockchain height is not updated yet.
     if transaction.status.failed?
       withdrawal.fail!
@@ -245,5 +244,6 @@ class BlockchainService
       withdrawal.success!
       db_tx.confirm!
     end
+    Rails.logger.warn { "transaction status: #{transaction.status} - #{latest_block_number}, #{ withdrawal.block_number}, #{@blockchain.min_confirmations}" }
   end
 end

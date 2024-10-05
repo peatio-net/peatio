@@ -67,6 +67,7 @@ module Ethereum
       # We collect fees depending on the number of spread deposit size
       # Example: if deposit spreads on three wallets need to collect eth fee for 3 transactions
       fees = convert_from_base_unit(options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i)
+      fees = convert_from_base_unit(fees) if @currency.fetch(:base_factor) == 10**6
       amount = fees * deposit_spread.size
       Rails.logger.warn { "gas_limit: #{options.fetch(:gas_limit).to_i}" }
       Rails.logger.warn { "gas_price: #{options.fetch(:gas_price).to_i}" }
