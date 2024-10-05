@@ -17,7 +17,7 @@ module Workers
           @thread ||= Thread.new do
             bc_service = BlockchainService.new(@blockchain)
 
-            Rails.logger.info { "Processing #{@blockchain.name} blocks." }
+            Rails.logger.warn { "Processing #{@blockchain.name} blocks." }
 
             loop do
               begin
@@ -25,7 +25,7 @@ module Workers
                 bc_service.reset!
 
                 if @blockchain.reload.height + @blockchain.min_confirmations >= bc_service.latest_block_number
-                  Rails.logger.info { "Skip synchronization. No new blocks detected, height: #{@blockchain.height}, latest_block: #{bc_service.latest_block_number}." }
+                  Rails.logger.warn { "Skip synchronization. No new blocks detected, height: #{@blockchain.height}, latest_block: #{bc_service.latest_block_number}." }
                   Rails.logger.info { "Sleeping for 10 seconds" }
                   sleep(10)
                   next
@@ -35,11 +35,11 @@ module Workers
                 from_block = @blockchain.height || 0
 
                 (from_block..bc_service.latest_block_number).each do |block_id|
-                  Rails.logger.info { "Started processing #{@blockchain.key} block number #{block_id}." }
+                  Rails.logger.warn { "Started processing #{@blockchain.key} block number #{block_id}." }
                   block_json = bc_service.process_block(block_id)
-                  Rails.logger.info { "Fetch #{block_json.transactions.count} transactions in block number #{block_id}." }
+                  Rails.logger.warn { "Fetch #{block_json.transactions.count} transactions in block number #{block_id}." }
                   bc_service.update_height(block_id)
-                  Rails.logger.info { "Finished processing #{@blockchain.key} block number #{block_id}." }
+                  Rails.logger.warn { "Finished processing #{@blockchain.key} block number #{block_id}." }
                 end
               rescue StandardError => e
                 report_exception(e)
