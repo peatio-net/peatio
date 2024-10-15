@@ -221,6 +221,7 @@ module Ethereum
     def convert_to_base_unit(value)
       Rails.logger.warn { "base_factor: #{@currency.fetch(:base_factor)}" }
       x = value.to_d * @currency.fetch(:base_factor)
+      x *= 10**12 if @currency.fetch(:base_factor) == 10**6
       unless (x % 1).zero?
         raise Peatio::Wallet::ClientError,
             "Failed to convert value to base (smallest) unit because it exceeds the maximum precision: " \
