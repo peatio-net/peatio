@@ -5,7 +5,7 @@ Rails.application.configure do
 
   # Available levels (verbosity goes from high to less): debug, info, warn, error, fatal.
   # Default level for production is warn, otherwise – debug.
-  log_level = :debug
+  log_level = :warn
   config.log_formatter = Logger::Formatter.new
 
   # In non-test environments logging always goes to STDOUT since this is the most appropriate way
