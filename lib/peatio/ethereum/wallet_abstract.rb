@@ -67,13 +67,14 @@ module Ethereum
       # We collect fees depending on the number of spread deposit size
       # Example: if deposit spreads on three wallets need to collect eth fee for 3 transactions
       fees = convert_from_base_unit(options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i)
-      fees = fees.to_d / 10**12 if @currency.fetch(:base_factor) == 10**6
       amount = fees * deposit_spread.size
       Rails.logger.warn { "gas_limit: #{options.fetch(:gas_limit).to_i}" }
       Rails.logger.warn { "gas_price: #{options.fetch(:gas_price).to_i}" }
       Rails.logger.warn { "fees: #{fees}" }
       Rails.logger.warn { "deposit_spread : #{deposit_spread.size}, #{deposit_spread}" }
       Rails.logger.warn { "base_factor: #{@currency.fetch(:base_factor)}" }
+      Rails.logger.warn { "deposit amount: #{amount}" }
+      Rails.logger.warn { "deposit min_collection_amount: #{@currency.fetch(:min_collection_amount).to_d}" }
       # If fee amount is greater than min collection amount
       # system will detect fee collection as deposit
       # To prevent this system will raise an error
@@ -121,7 +122,7 @@ module Ethereum
       options.merge!(DEFAULT_ETH_FEE, currency_options)
 
       amount = convert_to_base_unit(transaction.amount)
-      Rails.logger.warn "transaction : #{transaction.as_json} , options: #{options}"
+      Rails.logger.warn "create_eth_transaction transaction : #{transaction.as_json} , options: #{options}"
 
       if transaction.options.present? && transaction.options[:gas_price].present?
         options[:gas_price] = transaction.options[:gas_price]
@@ -132,7 +133,7 @@ module Ethereum
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i if options.dig(:subtract_fee)
 
-      Rails.logger.warn "gas_price: #{options[:gas_price]}, amount: #{amount}"
+      Rails.logger.warn "create_eth_transaction : gas_price: #{options[:gas_price]}, amount: #{amount}"
       txid = send_transaction({
                               from:     normalize_address(@wallet.fetch(:address)),
                               to:       normalize_address(transaction.to_address),
@@ -141,7 +142,7 @@ module Ethereum
                               gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
                              })
 
-      Rails.logger.warn "txid: #{txid}"
+      Rails.logger.warn "create_eth_transaction txid: #{txid}"
       unless valid_txid?(normalize_txid(txid))
         raise Ethereum::Client::Error, \
               "Withdrawal from #{@wallet.fetch(:address)} to #{transaction.to_address} failed."
@@ -160,6 +161,7 @@ module Ethereum
       options.merge!(DEFAULT_ERC20_FEE, currency_options)
 
       amount = convert_to_base_unit(transaction.amount)
+      Rails.logger.warn "erc20 amount: #{amount}"
       data = abi_encode('transfer(address,uint256)',
                         normalize_address(transaction.to_address),
                         '0x' + amount.to_s(16))
@@ -221,7 +223,7 @@ module Ethereum
     def convert_to_base_unit(value)
       Rails.logger.warn { "base_factor: #{@currency.fetch(:base_factor)}" }
       x = value.to_d * @currency.fetch(:base_factor)
-      x *= 10**12 if @currency.fetch(:base_factor) == 10**6
+      Rails.logger.warn { "convert_to_base_unit:  #{x}" }
       unless (x % 1).zero?
         raise Peatio::Wallet::ClientError,
             "Failed to convert value to base (smallest) unit because it exceeds the maximum precision: " \
