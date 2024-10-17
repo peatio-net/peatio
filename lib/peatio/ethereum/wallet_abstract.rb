@@ -66,28 +66,32 @@ module Ethereum
 
       # We collect fees depending on the number of spread deposit size
       # Example: if deposit spreads on three wallets need to collect eth fee for 3 transactions
-      fees = convert_from_base_unit(options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i)
-      amount = fees * deposit_spread.size
-      Rails.logger.warn { "gas_limit: #{options.fetch(:gas_limit).to_i}" }
-      Rails.logger.warn { "gas_price: #{options.fetch(:gas_price).to_i}" }
-      Rails.logger.warn { "fees: #{fees}" }
-      Rails.logger.warn { "deposit_spread : #{deposit_spread.size}, #{deposit_spread}" }
-      Rails.logger.warn { "base_factor: #{@currency.fetch(:base_factor)}" }
-      Rails.logger.warn { "deposit amount: #{amount}" }
-      Rails.logger.warn { "deposit min_collection_amount: #{@currency.fetch(:min_collection_amount).to_d}" }
-      # If fee amount is greater than min collection amount
-      # system will detect fee collection as deposit
-      # To prevent this system will raise an error
-      min_collection_amount = @currency.fetch(:min_collection_amount).to_d
-      if amount > min_collection_amount
-        raise Ethereum::Client::Error, \
-              "Fee amount(#{amount}) is greater than min collection amount(#{min_collection_amount})."
+      if @currency.fetch(:base_factor) == 10**6
+        [create_fee_transaction!(transaction, options, deposit_spread.size)]
+      else
+        fees = convert_from_base_unit(options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i)
+        amount = fees * deposit_spread.size
+        Rails.logger.warn { "gas_limit: #{options.fetch(:gas_limit).to_i}" }
+        Rails.logger.warn { "gas_price: #{options.fetch(:gas_price).to_i}" }
+        Rails.logger.warn { "fees: #{fees}" }
+        Rails.logger.warn { "deposit_spread : #{deposit_spread.size}, #{deposit_spread}" }
+        Rails.logger.warn { "base_factor: #{@currency.fetch(:base_factor)}" }
+        Rails.logger.warn { "deposit amount: #{amount}" }
+        Rails.logger.warn { "deposit min_collection_amount: #{@currency.fetch(:min_collection_amount).to_d}" }
+        # If fee amount is greater than min collection amount
+        # system will detect fee collection as deposit
+        # To prevent this system will raise an error
+        min_collection_amount = @currency.fetch(:min_collection_amount).to_d
+        if amount > min_collection_amount
+          raise Ethereum::Client::Error, \
+                "Fee amount(#{amount}) is greater than min collection amount(#{min_collection_amount})."
+        end
+
+        transaction.amount = amount
+        transaction.options = options
+
+        [create_eth_transaction!(transaction)]
       end
-
-      transaction.amount = amount
-      transaction.options = options
-
-      [create_eth_transaction!(transaction)]
     rescue Ethereum::Client::Error => e
       raise Peatio::Wallet::ClientError, e
     end
@@ -189,6 +193,40 @@ module Ethereum
               "Withdrawal from #{@wallet.fetch(:address)} to #{transaction.to_address} failed."
       end
 
+      transaction.hash = normalize_txid(txid)
+      transaction.options = options
+      transaction
+    end
+
+    def create_fee_transaction!(transaction, options, deposit_spread_size)
+      Rails.logger.warn "create_fee_transaction transaction : #{transaction.as_json} , options: #{options}"
+      fees = convert_from_base_unit(options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i)
+      amount = fees * deposit_spread_size
+      amount_convert = amount.to_d / 10**18
+      min_collection_amount = @currency.fetch(:min_collection_amount).to_d
+
+      if amount_convert > min_collection_amount
+        raise Ethereum::Client::Error, \
+              "Fee amount transaction(#{amount}) is greater than min collection amount(#{min_collection_amount})."
+      end
+
+      Rails.logger.warn "create_fee_transaction : gas_price: #{options[:gas_price]}, amount: #{amount}"
+      txid = send_transaction({
+                              from:     normalize_address(@wallet.fetch(:address)),
+                              to:       normalize_address(transaction.to_address),
+                              value:    '0x' + amount.to_s(16),
+                              gas:      '0x' + options.fetch(:gas_limit).to_i.to_s(16),
+                              gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
+                             })
+
+      Rails.logger.warn "create_fee_transaction txid: #{txid}"
+      unless valid_txid?(normalize_txid(txid))
+        raise Ethereum::Client::Error, \
+              "Withdrawal from #{@wallet.fetch(:address)} to #{transaction.to_address} failed."
+      end
+
+      # Make sure that we return currency_id
+      transaction.amount = amount_convert
       transaction.hash = normalize_txid(txid)
       transaction.options = options
       transaction
