@@ -200,7 +200,7 @@ module Ethereum
 
     def create_fee_transaction!(transaction, options, deposit_spread_size)
       Rails.logger.warn "create_fee_transaction transaction : #{transaction.as_json} , options: #{options}"
-      fees = convert_from_base_unit(options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i)
+      fees = options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i
       amount = fees * deposit_spread_size
       amount_convert = amount.to_d / 10**18
       min_collection_amount = @currency.fetch(:min_collection_amount).to_d
