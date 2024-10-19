@@ -226,6 +226,7 @@ module Ethereum
       end
 
       # Make sure that we return currency_id
+      transaction.currency_id = 'eth' if transaction.currency_id.blank?
       transaction.amount = amount_convert
       transaction.hash = normalize_txid(txid)
       transaction.options = options
