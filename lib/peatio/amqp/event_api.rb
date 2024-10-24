@@ -71,7 +71,10 @@ module EventAPI
         %i[create update].each do |event|
           after_commit on: event, prepend: true do
             if self.class.event_api_settings[:on]&.include?(event)
-              Rails.logger.warn "Event Send Mail  class : #{self.class.name}, id : #{self.id}, event #{event}: , state : #{self.try(:aasm_state)}"
+              state = self.try(:aasm_state)
+              next if self.class.name == 'Deposits::Coin' && event == :update && %w[fee_collecting fee_collected collecting processing].include?(state)
+
+              Rails.logger.warn "Event Send Mail  class : #{self.class.name}, id : #{self.id}, event #{event}: , state : #{state}"
               event_api.public_send("notify_record_#{event}d")
             end
           end
