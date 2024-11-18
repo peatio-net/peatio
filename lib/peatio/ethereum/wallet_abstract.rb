@@ -34,7 +34,7 @@ module Ethereum
     end
 
     def create_address!(options = {})
-      secret = options.fetch(:secret) { PasswordGeneratro.generate(64) }
+      secret = options.fetch(:secret) { PasswordGenerator.generate(64) }
       secret.yield_self do |password|
         { address: normalize_address(client.json_rpc(:personal_newAccount, [password])),
           secret:  password }
