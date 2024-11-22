@@ -313,7 +313,7 @@ module Ethereum
       Rails.logger.warn "#{@settings.fetch(:currency)}"
       while attempt <= max_attempts
         begin
-          if attempt == max_attempts && options_currency.presen? && options_currency[:gas_price].present?
+          if attempt == max_attempts && options_currency.present? && options_currency[:gas_price].present?
             params[:gasPrice] = '0x' + options_currency[:gas_price].to_s(16)
           else
             params[:gasPrice] = '0x' + higher_gas_price(attempt).to_s(16)
