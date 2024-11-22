@@ -307,7 +307,7 @@ module Ethereum
     end
 
     def retry_with_higher_gas_price(params)
-      max_attempts = 5
+      max_attempts = 20
       attempt = 1
       while attempt < max_attempts
         begin
