@@ -132,6 +132,7 @@ class BlockchainCurrency < ApplicationRecord
     opt.deep_symbolize_keys.merge(id:                    currency.id,
                                   base_factor:           base_factor,
                                   min_collection_amount: min_collection_amount,
+                                  gas_price:             opt[:gas_price],
                                   options:               opt)
   end
 
