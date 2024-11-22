@@ -307,11 +307,17 @@ module Ethereum
     end
 
     def retry_with_higher_gas_price(params)
-      max_attempts = 20
+      max_attempts = 5
       attempt = 1
-      while attempt < max_attempts
+      options_currency = @settings.fetch(:currency)&.options
+      Rails.logger.warn "#{@settings.fetch(:currency)}"
+      while attempt <= max_attempts
         begin
-          params[:gasPrice] = '0x' + higher_gas_price(attempt).to_s(16)
+          if attempt == max_attempts && options_currency.presen? && options_currency[:gas_price].present?
+            params[:gasPrice] = '0x' + options_currency[:gas_price].to_s(16)
+          else
+            params[:gasPrice] = '0x' + higher_gas_price(attempt).to_s(16)
+          end
           params[:nonce] = '0x' + get_nonce.to_s(16)
 
           txid = client.json_rpc(
