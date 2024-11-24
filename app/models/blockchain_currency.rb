@@ -122,7 +122,7 @@ class BlockchainCurrency < ApplicationRecord
     # We pass options are available as top-level hash keys and via options for
     # compatibility with Wallet#to_wallet_api_settings.
     opt = options.compact.deep_symbolize_keys
-
+    gas_price = opt[:gas_price]
     # System have gas_speed configuration in blockchain level
     # And it differs for deposit collection transfer and withdrawal transfer
     # By default system use withdrawal_gas_speed
@@ -132,7 +132,7 @@ class BlockchainCurrency < ApplicationRecord
     opt.deep_symbolize_keys.merge(id:                    currency.id,
                                   base_factor:           base_factor,
                                   min_collection_amount: min_collection_amount,
-                                  gas_price:             opt[:gas_price],
+                                  gas_price:             gas_price,
                                   options:               opt)
   end
 
