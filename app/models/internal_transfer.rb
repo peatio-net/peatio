@@ -37,6 +37,13 @@ class InternalTransfer < ApplicationRecord
     user == sender ? 'out' : 'in'
   end
 
+  def as_json_for_event_api
+    { internal_transfer_sender:     sender.email,
+      internal_transfer_receiver:   receiver.email,
+      amount: amount,
+      currency_name: currency.name
+    }
+  end
 end
 
 # == Schema Information
