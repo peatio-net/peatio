@@ -34,11 +34,13 @@ module Ethereum
     end
 
     def create_address!(options = {})
-      secret = options.fetch(:secret) { PasswordGenerator.generate(64) }
-      secret.yield_self do |password|
-        { address: normalize_address(client.json_rpc(:personal_newAccount, [password])),
-          secret:  password }
-      end
+      address = EthereumAccountService.create_address
+      raise "Failed to create ETH address from Clef" unless address
+
+      {
+        address: address,
+        secret: nil
+      }
     rescue Ethereum::Client::Error => e
       raise Peatio::Wallet::ClientError, e
     end
@@ -289,8 +291,8 @@ module Ethereum
       Rails.logger.warn "Start send : #{params}"
       begin
         txid = client.json_rpc(
-          :personal_sendTransaction,
-          [params.compact, @wallet.fetch(:secret)]
+          :eth_send_transaction,
+          [params.compact]
         )
 
         Rails.logger.warn "Transaction sent successfully with txid: #{txid}"
@@ -321,8 +323,8 @@ module Ethereum
           params[:nonce] = '0x' + get_nonce.to_s(16)
 
           txid = client.json_rpc(
-              :personal_sendTransaction,
-              [params.compact, @wallet.fetch(:secret)]
+              :eth_send_transaction,
+              [params.compact]
             )
 
           Rails.logger.warn "Transaction retried successfully with txid: #{txid}"
