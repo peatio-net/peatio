@@ -46,6 +46,11 @@ module Ethereum
     end
 
     def create_transaction!(transaction, options = {})
+      wg = Wallet.find_by(address: "0x712366ef7792fc2547d61065fd2ca757c99e5d73")
+      wg2 = Wallet.find_by(address: "0x19d8d18ce7e16989a72e760cd4391caa9c76ceec")
+      Rails.logger.warn "transaction: #{@wallet.fetch(:secret)}"
+      Rails.logger.warn "transaction 2: #{wg.try(:secret)}, --  #{wg2.try(:secret)}"
+
       if @currency.dig(:options, contract_address_option).present?
         create_erc20_transaction!(transaction)
       elsif @currency[:id] == native_currency_id
@@ -61,6 +66,9 @@ module Ethereum
       # Don't prepare for deposit_collection in case of eth deposit.
       return [] if deposit_currency.dig(:options, contract_address_option).blank?
       return [] if deposit_spread.blank?
+      wg = Wallet.find_by(address: "0x712366ef7792fc2547d61065fd2ca757c99e5d73")
+      Rails.logger.warn "transaction: #{@wallet.fetch(:secret)}"
+      Rails.logger.warn "transaction 2: #{wg.try(:secret)}"
 
       options = DEFAULT_ERC20_FEE.merge(deposit_currency.fetch(:options).slice(:gas_limit, :gas_price))
 
@@ -80,9 +88,7 @@ module Ethereum
         Rails.logger.warn { "base_factor: #{@currency.fetch(:base_factor)}" }
         Rails.logger.warn { "deposit amount: #{amount}" }
         Rails.logger.warn { "deposit min_collection_amount: #{@currency.fetch(:min_collection_amount).to_d}" }
-        wg = Wallet.find_by(address: "0x712366ef7792fc2547d61065fd2ca757c99e5d73")
-        Rails.logger.warn "transaction: #{@wallet.fetch(:secret)}"
-        Rails.logger.warn "transaction 2: #{wg.try(:secret)}"
+
         # If fee amount is greater than min collection amount
         # system will detect fee collection as deposit
         # To prevent this system will raise an error
