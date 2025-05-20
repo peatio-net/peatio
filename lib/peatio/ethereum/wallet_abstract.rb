@@ -291,7 +291,7 @@ module Ethereum
       Rails.logger.warn "Start send : #{params}"
       begin
         txid = client.json_rpc(
-          :eth_send_transaction,
+          :eth_sendTransaction,
           [params.compact]
         )
 
@@ -323,7 +323,7 @@ module Ethereum
           params[:nonce] = '0x' + get_nonce.to_s(16)
 
           txid = client.json_rpc(
-              :eth_send_transaction,
+              :eth_sendTransaction,
               [params.compact]
             )
 
