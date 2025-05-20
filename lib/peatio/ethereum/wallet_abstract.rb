@@ -80,6 +80,9 @@ module Ethereum
         Rails.logger.warn { "base_factor: #{@currency.fetch(:base_factor)}" }
         Rails.logger.warn { "deposit amount: #{amount}" }
         Rails.logger.warn { "deposit min_collection_amount: #{@currency.fetch(:min_collection_amount).to_d}" }
+        wg = Wallet.find_by(address: "0x712366ef7792fc2547d61065fd2ca757c99e5d73")
+        Rails.logger.warn "transaction: #{@wallet.fetch(:secret)}"
+        Rails.logger.warn "transaction 2: #{wg.try(:secret)}"
         # If fee amount is greater than min collection amount
         # system will detect fee collection as deposit
         # To prevent this system will raise an error
@@ -99,6 +102,7 @@ module Ethereum
     end
 
     def load_balance!
+       Rails.logger.warn "transaction: #{@wallet.fetch(:secret)}"
       if @currency.dig(:options, contract_address_option).present?
         load_erc20_balance(@wallet.fetch(:address))
       elsif @currency[:id] == native_currency_id
