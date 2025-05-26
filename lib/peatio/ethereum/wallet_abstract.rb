@@ -46,11 +46,6 @@ module Ethereum
     end
 
     def create_transaction!(transaction, options = {})
-      wg = Wallet.find_by(address: "0x712366ef7792fc2547d61065fd2ca757c99e5d73")
-      wg2 = Wallet.find_by(address: "0x19d8d18ce7e16989a72e760cd4391caa9c76ceec")
-      Rails.logger.warn "transaction: #{@wallet.fetch(:secret)}"
-      Rails.logger.warn "transaction 2: #{wg.try(:secret)}, --  #{wg2.try(:secret)}"
-
       if @currency.dig(:options, contract_address_option).present?
         create_erc20_transaction!(transaction)
       elsif @currency[:id] == native_currency_id
@@ -66,9 +61,6 @@ module Ethereum
       # Don't prepare for deposit_collection in case of eth deposit.
       return [] if deposit_currency.dig(:options, contract_address_option).blank?
       return [] if deposit_spread.blank?
-      wg = Wallet.find_by(address: "0x712366ef7792fc2547d61065fd2ca757c99e5d73")
-      Rails.logger.warn "transaction: #{@wallet.fetch(:secret)}"
-      Rails.logger.warn "transaction 2: #{wg.try(:secret)}"
 
       options = DEFAULT_ERC20_FEE.merge(deposit_currency.fetch(:options).slice(:gas_limit, :gas_price))
 
@@ -108,7 +100,6 @@ module Ethereum
     end
 
     def load_balance!
-       Rails.logger.warn "transaction: #{@wallet.fetch(:secret)}"
       if @currency.dig(:options, contract_address_option).present?
         load_erc20_balance(@wallet.fetch(:address))
       elsif @currency[:id] == native_currency_id
@@ -150,8 +141,6 @@ module Ethereum
       amount -= options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i if options.dig(:subtract_fee)
 
       Rails.logger.warn "create_eth_transaction : gas_price: #{options[:gas_price]}, amount: #{amount}"
-      wto = Wallet.find_by(address: transaction.to_address) || Wallet.find_by(address: normalize_address(transaction.to_address))
-      Rails.logger.warn "transaction: #{@wallet.fetch(:secret)} , to : #{wto.try(:secret)}"
       txid = send_transaction({
                               from:     normalize_address(@wallet.fetch(:address)),
                               to:       normalize_address(transaction.to_address),
@@ -160,7 +149,6 @@ module Ethereum
                               gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
                              })
 
-      Rails.logger.warn "create_eth_transaction txid: #{txid}"
       Rails.logger.warn "create_eth_transaction txid: #{txid}"
       unless valid_txid?(normalize_txid(txid))
         raise Ethereum::Client::Error, \
@@ -226,9 +214,6 @@ module Ethereum
       end
 
       Rails.logger.warn "create_fee_transaction : gas_price: #{options[:gas_price]}, amount: #{amount}"
-      wto = Wallet.find_by(address: transaction.to_address) || Wallet.find_by(address: normalize_address(transaction.to_address))
-      Rails.logger.warn "transaction: #{@wallet.fetch(:secret)} , to : #{wto.try(:secret)}"
-
       txid = send_transaction({
                               from:     normalize_address(@wallet.fetch(:address)),
                               to:       normalize_address(transaction.to_address),
