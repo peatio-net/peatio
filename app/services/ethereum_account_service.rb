@@ -7,6 +7,7 @@ class EthereumAccountService
 
   def self.create_address
     uri = URI.parse(CLEF_ENDPOINT)
+    Rails.logger.warn "uri : #{uri}"
     request = Net::HTTP::Post.new(uri)
     request['Content-Type'] = 'application/json'
     request.body = {

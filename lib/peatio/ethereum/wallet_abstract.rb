@@ -46,6 +46,9 @@ module Ethereum
     end
 
     def create_transaction!(transaction, options = {})
+      Rails.logger.warn "trans"
+      Rails.logger.warn "trans 1: #{@currency.dig(:options, contract_address_option).present?}"
+      Rails.logger.warn "trans 2:  -- #{ @currency[:id] == native_currency_id}"
       if @currency.dig(:options, contract_address_option).present?
         create_erc20_transaction!(transaction)
       elsif @currency[:id] == native_currency_id
