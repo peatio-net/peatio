@@ -30,6 +30,7 @@ class EthereumAccountService
     end
   rescue => e
     Rails.logger.error { "[Clef] Exception while creating account: #{e.message}" }
+    Rails.logger.error { "[Clef] uri.hostname: #{uri.hostname}, uri.port: #{uri.port}" }
     nil
   end
 end
