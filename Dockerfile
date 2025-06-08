@@ -28,6 +28,10 @@ RUN groupadd -r --gid ${GID} app \
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install default-libmysqlclient-dev -y
 
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g ethers
+
 # Install Kaigara
 RUN curl -Lo /usr/bin/kaigara https://github.com/openware/kaigara/releases/download/${KAIGARA_VERSION}/kaigara \
   && chmod +x /usr/bin/kaigara
