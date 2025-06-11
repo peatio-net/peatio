@@ -34,16 +34,21 @@ module Ethereum
     end
 
     def create_address!(options = {})
-      secret = options.fetch(:secret) { PasswordGenerator.generate(64) }
-      secret.yield_self do |password|
-        { address: normalize_address(client.json_rpc(:personal_newAccount, [password])),
-          secret:  password }
-      end
+      address = EthereumAccountService.create_address
+      raise "Failed to create ETH address from Clef" unless address
+
+      {
+        address: address,
+        secret: nil
+      }
     rescue Ethereum::Client::Error => e
       raise Peatio::Wallet::ClientError, e
     end
 
     def create_transaction!(transaction, options = {})
+      Rails.logger.warn "trans"
+      Rails.logger.warn "trans 1: #{@currency.dig(:options, contract_address_option).present?}"
+      Rails.logger.warn "trans 2:  -- #{ @currency[:id] == native_currency_id}"
       if @currency.dig(:options, contract_address_option).present?
         create_erc20_transaction!(transaction)
       elsif @currency[:id] == native_currency_id
@@ -78,6 +83,7 @@ module Ethereum
         Rails.logger.warn { "base_factor: #{@currency.fetch(:base_factor)}" }
         Rails.logger.warn { "deposit amount: #{amount}" }
         Rails.logger.warn { "deposit min_collection_amount: #{@currency.fetch(:min_collection_amount).to_d}" }
+
         # If fee amount is greater than min collection amount
         # system will detect fee collection as deposit
         # To prevent this system will raise an error
@@ -218,7 +224,6 @@ module Ethereum
                               gas:      '0x' + options.fetch(:gas_limit).to_i.to_s(16),
                               gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
                              })
-
       Rails.logger.warn "create_fee_transaction txid: #{txid}"
       unless valid_txid?(normalize_txid(txid))
         raise Ethereum::Client::Error, \
@@ -289,8 +294,8 @@ module Ethereum
       Rails.logger.warn "Start send : #{params}"
       begin
         txid = client.json_rpc(
-          :personal_sendTransaction,
-          [params.compact, @wallet.fetch(:secret)]
+          :eth_sendTransaction,
+          [params.compact]
         )
 
         Rails.logger.warn "Transaction sent successfully with txid: #{txid}"
@@ -321,8 +326,8 @@ module Ethereum
           params[:nonce] = '0x' + get_nonce.to_s(16)
 
           txid = client.json_rpc(
-              :personal_sendTransaction,
-              [params.compact, @wallet.fetch(:secret)]
+              :eth_sendTransaction,
+              [params.compact]
             )
 
           Rails.logger.warn "Transaction retried successfully with txid: #{txid}"

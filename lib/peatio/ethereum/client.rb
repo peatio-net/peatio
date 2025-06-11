@@ -16,6 +16,7 @@ module Ethereum
       @json_rpc_endpoint = URI.parse(endpoint)
       @json_rpc_call_id = 0
       @path = @json_rpc_endpoint.path.empty? ? "/" : @json_rpc_endpoint.path
+      Rails.logger.warn "path: #{@path}"
       @idle_timeout = idle_timeout
     end
 
