@@ -34,7 +34,7 @@ module Ethereum
     end
 
     def create_address!(options = {})
-      address = EthereumAccountService.create_address
+      address = EthService.create_account(PasswordGenerator.generate(64))
       raise "Failed to create ETH address from Clef" unless address
 
       {
@@ -193,7 +193,6 @@ module Ethereum
                                 gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
                               })
 
-      Rails.logger.warn "txid : #{txid}"
       unless valid_txid?(normalize_txid(txid))
         raise Ethereum::Client::Error, \
               "Withdrawal from #{@wallet.fetch(:address)} to #{transaction.to_address} failed."
@@ -224,7 +223,6 @@ module Ethereum
                               gas:      '0x' + options.fetch(:gas_limit).to_i.to_s(16),
                               gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
                              })
-      Rails.logger.warn "create_fee_transaction txid: #{txid}"
       unless valid_txid?(normalize_txid(txid))
         raise Ethereum::Client::Error, \
               "Withdrawal from #{@wallet.fetch(:address)} to #{transaction.to_address} failed."
@@ -293,11 +291,10 @@ module Ethereum
     def send_transaction(params)
       Rails.logger.warn "Start send : #{params}"
       begin
-        txid = client.json_rpc(
-          :eth_sendTransaction,
-          [params.compact]
-        )
-
+        txid = EthService.send_transaction(from_address: params[:from],
+                                           password: @wallet.fetch(:secret),
+                                           to: params[:to],
+                                           amount: params[:value] || params[:data])
         Rails.logger.warn "Transaction sent successfully with txid: #{txid}"
         return txid
       rescue => e
