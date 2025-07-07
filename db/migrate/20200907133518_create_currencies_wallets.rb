@@ -2,15 +2,22 @@ class CreateCurrenciesWallets < ActiveRecord::Migration[5.2]
   def change
     reversible do |dir|
       dir.up do
-        create_join_table :currencies, :wallets do |t|
-          t.string :currency_id, index: true
-          t.integer :wallet_id, index: true
+        unless table_exists?(:currencies_wallets)
+          create_join_table :currencies, :wallets do |t|
+            # create_join_table automatically creates currency_id and wallet_id columns
+            # so we don't need to define them explicitly
+          end
         end
-        add_index :currencies_wallets, %i[currency_id wallet_id], unique: true
+        
+        # Add indexes if they don't exist
+        unless index_exists?(:currencies_wallets, [:currency_id, :wallet_id])
+          add_index :currencies_wallets, %i[currency_id wallet_id], unique: true
+        end
+        
         # Add links for the existing wallets and currencies
         # Make sure to join wallets with currencies after migration via admin API
         Wallet.find_each do |w|
-          CurrencyWallet.create(wallet_id: w.id, currency_id: w.currency_id)
+          CurrencyWallet.create(wallet_id: w.id, currency_id: w.currency_id) if w.currency_id.present?
         end
 
         add_reference :payment_addresses, :member, index: true, after: :id
